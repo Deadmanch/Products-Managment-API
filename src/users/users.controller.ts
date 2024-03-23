@@ -112,7 +112,6 @@ export class UserController extends BaseController implements IUserController {
 		next: NextFunction,
 	): Promise<void> {
 		const result = await this.userService.register(body);
-		console.log(` CONTROLLER: ${result}`);
 		if (!result) {
 			return next(
 				new HTTPError(HTTPStatusCode.UNPROCESSABLE_ENTITY, UserMsgEnum.USER_IS_EXISTS, 'REGISTER'),
@@ -128,7 +127,7 @@ export class UserController extends BaseController implements IUserController {
 
 	async info({ user }: Request, res: Response, next: NextFunction): Promise<void> {
 		const userInfo = await this.userService.getUserInfo(user);
-		console.log(userInfo);
+
 		this.ok(res, {
 			email: userInfo?.email,
 			name: userInfo?.name,
