@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { App } from '../src/app';
 import { HTTPStatusCode } from '../src/common/http.status-code.enum';
+import { UserMsgEnum } from '../src/enums/user.msg.enums';
 import { boot } from '../src/main';
 
 let application: App;
@@ -59,7 +60,67 @@ describe('User - e2e', () => {
 	it('Register = user is Exist', async () => {
 		const res = await request(application.app).post('/users/register').send(testAdmin);
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
-		expect(res.body.err).toBe('Пользователь с таким email уже существует');
+		expect(res.body.err).toBe(UserMsgEnum.USER_IS_EXISTS);
+	});
+
+	it('Login - empty email', async () => {
+		const res = await request(application.app).post('/users/login').send({
+			password: testAdmin.password,
+		});
+		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
+	});
+
+	it('Login - wrong email', async () => {
+		const res = await request(application.app).post('/users/login').send({
+			password: testAdmin.password,
+			email: '@mail.ru',
+		});
+		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
+	});
+
+	it('Login - empty password', async () => {
+		const res = await request(application.app).post('/users/login').send({
+			email: testAdmin.email,
+		});
+		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
+	});
+
+	it('Login - wrong password type', async () => {
+		const res = await request(application.app)
+			.post('/users/login')
+			.send({
+				email: testAdmin.email,
+				password: Number(testAdmin.password),
+			});
+		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
+	});
+
+	it('Login - success', async () => {
+		const res = await request(application.app).post('/users/login').send({
+			email: testAdmin.email,
+			password: testAdmin.password,
+		});
+		expect(res.statusCode).toBe(HTTPStatusCode.OK);
+		expect(res.body.jwt).not.toBeUndefined();
+		expect(res.body.jwt).not.toBeNull();
+		adminJWT = res.body.jwt;
+	});
+
+	it('GetUserInfo - success', async () => {
+		const res = await request(application.app)
+			.get('/users/info')
+			.set('Authorization', 'Bearer ' + adminJWT)
+			.send();
+		expect(res.statusCode).toBe(HTTPStatusCode.OK);
+	});
+
+	it('GetUserInfo - unauthorized empty token', async () => {
+		const res = await request(application.app)
+			.get('/users/info')
+			.set('Authorization', 'Bearer')
+			.send();
+		expect(res.statusCode).toBe(HTTPStatusCode.UNAUTHORIZED);
+		expect(res.body.error).toBe(UserMsgEnum.USER_IS_NOT_AUTHORIZED);
 	});
 });
 

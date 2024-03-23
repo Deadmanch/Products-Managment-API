@@ -8,6 +8,6 @@ export class AuthGuard implements IMiddleware {
 		if (req.user) {
 			return next();
 		}
-		res.status(HTTPStatusCode.BAD_REQUEST).send({ error: UserMsgEnum.USER_IS_NOT_AUTHORIZED });
+		res.status(HTTPStatusCode.UNAUTHORIZED).send({ error: UserMsgEnum.USER_IS_NOT_AUTHORIZED });
 	}
 }
