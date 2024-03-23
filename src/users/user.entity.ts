@@ -46,6 +46,6 @@ export class User {
 		this._password = await hash(pass, salt);
 	}
 	async comparePassword(pass: string): Promise<boolean> {
-		return await compare(pass, this._password);
+		return compare(pass, this._password);
 	}
 }

@@ -1,5 +1,4 @@
-import { Role } from '@prisma/client';
-import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 import { UserMsgEnum } from '../../enums/user.msg.enums';
 
 export class UserUpdateDto {
@@ -10,12 +9,4 @@ export class UserUpdateDto {
 	@IsOptional()
 	@IsString({ message: UserMsgEnum.USER_PASSWORD_ERR })
 	password: string;
-
-	@IsOptional()
-	@IsString({ message: UserMsgEnum.USER_NAME_ERR })
-	name: string;
-
-	@IsOptional()
-	@IsEnum(Role)
-	role: Role;
 }

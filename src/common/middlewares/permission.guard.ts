@@ -4,7 +4,7 @@ import { UserMsgEnum } from '../../enums/user.msg.enums';
 import { HTTPStatusCode } from '../http.status-code.enum';
 import { IMiddleware } from './middlewares.interface';
 
-export class PermissonGuard implements IMiddleware {
+export class PermissionGuard implements IMiddleware {
 	#roles: Role[] = [];
 
 	constructor(roles: Role[]) {

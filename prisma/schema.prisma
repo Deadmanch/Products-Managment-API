@@ -15,7 +15,7 @@ datasource db {
 
 enum Role {
   ADMIN
-  MANAGER
+  WAREHOUSE_MANAGER
 }
 
 model UserModel {
@@ -23,7 +23,7 @@ model UserModel {
   name      String
   email     String   @unique
   password  String
-  role      Role     @default(MANAGER)
+  role      Role     @default(WAREHOUSE_MANAGER)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }

@@ -1,5 +1,4 @@
-import { Request, Response } from 'express';
-import { NextFunction } from 'express-serve-static-core';
+import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
 import { TYPES } from '../common/dependency-injection/types';
