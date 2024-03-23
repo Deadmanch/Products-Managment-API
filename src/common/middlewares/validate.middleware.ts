@@ -10,7 +10,6 @@ export class ValidateMiddleware implements IMiddleware {
 	execute({ body }: Request, res: Response, next: NextFunction): void {
 		const instance = plainToClass(this.classToValidate, body);
 		validate(instance).then((errors) => {
-			console.log(`VALIDATE - ${errors}`);
 			if (errors.length > 0) {
 				res.status(HTTPStatusCode.UNPROCESSABLE_ENTITY).send(errors);
 			} else {

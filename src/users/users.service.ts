@@ -77,6 +77,10 @@ export class UserService implements IUserService {
 	}
 
 	async deleteWarehouseManager(email: string): Promise<UserModel | null> {
+		const existedUser = await this.userRepository.find(email);
+		if (!existedUser) {
+			return null;
+		}
 		return this.userRepository.delete(email);
 	}
 }

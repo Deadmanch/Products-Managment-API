@@ -5,6 +5,6 @@ export class UserLoginDto {
 	@IsEmail({}, { message: UserMsgEnum.USER_EMAIL_ERR })
 	email: string;
 
-	@IsString()
+	@IsString({ message: UserMsgEnum.USER_PASSWORD_ERR })
 	password: string;
 }

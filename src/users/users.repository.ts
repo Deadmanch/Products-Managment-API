@@ -43,6 +43,7 @@ export class UserRepository implements IUserRepository {
 		return this.prismaService.client.userModel.delete({
 			where: {
 				email,
+				role: 'WAREHOUSE_MANAGER',
 			},
 		});
 	}
