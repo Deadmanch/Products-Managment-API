@@ -166,7 +166,11 @@ export class UserController extends BaseController implements IUserController {
 		const result = await this.userService.deleteWarehouseManager(body.email);
 		if (!result) {
 			return next(
-				new HTTPError(HTTPStatusCode.BAD_REQUEST, UserMsgEnum.USER_IS_NOT_EXIST, 'DELETE'),
+				new HTTPError(
+					HTTPStatusCode.BAD_REQUEST,
+					UserMsgEnum.WAREHOUSE_MANAGER_IS_NOT_EXIST,
+					'DELETE',
+				),
 			);
 		} else {
 			this.send(res, HTTPStatusCode.OK, {
