@@ -191,6 +191,87 @@ describe('User - e2e', () => {
 		expect(res.statusCode).toBe(HTTPStatusCode.FORBIDDEN);
 		expect(res.body.error).toBe(UserMsgEnum.USER_IS_NOT_ENOUGH_RIGHTS);
 	});
+
+	it('Update Warehouse Manager password - empty email', async () => {
+		const res = await request(application.app)
+			.patch('/users/update')
+			.set('Authorization', 'Bearer ' + adminJWT)
+			.send({
+				password: testWarehouseManager.password,
+			});
+		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
+	});
+
+	it('Update Warehouse Manager password - wrong email', async () => {
+		const res = await request(application.app)
+			.patch('/users/update')
+			.set('Authorization', 'Bearer ' + adminJWT)
+			.send({
+				email: '@mail.ru',
+				password: testWarehouseManager.password,
+			});
+		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
+	});
+
+	it('Update Warehouse Manager password - empty password', async () => {
+		const res = await request(application.app)
+			.patch('/users/update')
+			.set('Authorization', 'Bearer ' + adminJWT)
+			.send({
+				email: testWarehouseManager.email,
+			});
+		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
+	});
+	it('Update Warehouse Manager password - success', async () => {
+		const res = await request(application.app)
+			.patch('/users/update')
+			.set('Authorization', 'Bearer ' + adminJWT)
+			.send({
+				email: testWarehouseManager.email,
+				password: newWarehouseManagerPass,
+			});
+		expect(res.statusCode).toBe(HTTPStatusCode.OK);
+	});
+
+	it('Delete Warehouse Manager error - empty email', async () => {
+		const res = await request(application.app)
+			.delete('/users/delete')
+			.set('Authorization', 'Bearer ' + adminJWT)
+			.send();
+		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
+	});
+
+	it('Delete Warehouse Manager error - wrong email', async () => {
+		const res = await request(application.app)
+			.delete('/users/delete')
+			.set('Authorization', 'Bearer ' + adminJWT)
+			.send({
+				email: '@mail.ru',
+			});
+		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
+	});
+
+	it('Delete Warehouse Manager error - FORBIDDEN', async () => {
+		const res = await request(application.app)
+			.delete('/users/delete')
+			.set('Authorization', 'Bearer ' + warehouseManagerJWT)
+			.send({
+				email: testWarehouseManager.email,
+			});
+		expect(res.statusCode).toBe(HTTPStatusCode.FORBIDDEN);
+		expect(res.body.error).toBe(UserMsgEnum.USER_IS_NOT_ENOUGH_RIGHTS);
+	});
+
+	it('Delete Warehouse Manager  - success', async () => {
+		const res = await request(application.app)
+			.delete('/users/delete')
+			.set('Authorization', 'Bearer ' + adminJWT)
+			.send({
+				email: testWarehouseManager.email,
+			});
+		expect(res.statusCode).toBe(HTTPStatusCode.OK);
+		expect(res.body.message).toBe(UserMsgEnum.WAREHOUSE_MANAGER_SUCCESSFULLY_REMOVED);
+	});
 });
 
 afterAll(async () => {
