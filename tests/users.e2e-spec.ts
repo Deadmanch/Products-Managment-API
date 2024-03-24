@@ -1,10 +1,13 @@
 import request from 'supertest';
 import { App } from '../src/app';
 import { HTTPStatusCode } from '../src/common/http.status-code.enum';
+import { PrismaService } from '../src/database/prisma.service';
 import { UserMsgEnum } from '../src/enums/user.msg.enums';
+import { LoggerService } from '../src/logger/logger.service';
 import { boot } from '../src/main';
 
 let application: App;
+let prismaService: PrismaService;
 let adminJWT: string | null | undefined;
 let warehouseManagerJWT: string | null | undefined;
 let testAdmin: { name: string; email: string; password: string };
@@ -13,6 +16,7 @@ let newWarehouseManagerPass: string;
 
 beforeAll(async () => {
 	const { app } = await boot;
+	prismaService = new PrismaService(new LoggerService());
 	testAdmin = {
 		name: 'testAdmin',
 		email: 'test-admin@mail.ru',
@@ -25,6 +29,7 @@ beforeAll(async () => {
 	};
 	newWarehouseManagerPass = 'qwerty-new';
 	application = app;
+	await prismaService.connect();
 	adminJWT = null;
 	warehouseManagerJWT = null;
 });
@@ -275,5 +280,11 @@ describe('User - e2e', () => {
 });
 
 afterAll(async () => {
+	await prismaService.client.userModel.delete({
+		where: {
+			email: testAdmin.email,
+		},
+	});
+	await prismaService.disconnect();
 	application.close();
 });
