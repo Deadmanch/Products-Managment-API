@@ -99,6 +99,14 @@ describe('User - e2e', () => {
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
 	});
+	it('Login - error user is not exist', async () => {
+		const res = await request(application.app).post('/users/login').send({
+			email: 'test@mail.ru',
+			password: testAdmin.password,
+		});
+		expect(res.statusCode).toBe(HTTPStatusCode.BAD_REQUEST);
+		expect(res.body.err).toBe(UserMsgEnum.USER_IS_NOT_EXIST);
+	});
 
 	it('Login - success', async () => {
 		const res = await request(application.app).post('/users/login').send({
@@ -227,6 +235,19 @@ describe('User - e2e', () => {
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
 	});
+
+	it('Update Warehouse Manager password - user is not exist', async () => {
+		const res = await request(application.app)
+			.patch('/users/update')
+			.set('Authorization', 'Bearer ' + adminJWT)
+			.send({
+				email: 'test@mail.ru',
+				password: testWarehouseManager.password,
+			});
+		expect(res.statusCode).toBe(HTTPStatusCode.BAD_REQUEST);
+		expect(res.body.err).toBe(UserMsgEnum.USER_IS_NOT_EXIST);
+	});
+
 	it('Update Warehouse Manager password - success', async () => {
 		const res = await request(application.app)
 			.patch('/users/update')
@@ -265,6 +286,17 @@ describe('User - e2e', () => {
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.FORBIDDEN);
 		expect(res.body.error).toBe(UserMsgEnum.USER_IS_NOT_ENOUGH_RIGHTS);
+	});
+
+	it('Delete Warehouse Manager error - user is not exist', async () => {
+		const res = await request(application.app)
+			.delete('/users/delete')
+			.set('Authorization', 'Bearer ' + adminJWT)
+			.send({
+				email: 'test@mail.ru',
+			});
+		expect(res.statusCode).toBe(HTTPStatusCode.BAD_REQUEST);
+		expect(res.body.err).toBe(UserMsgEnum.WAREHOUSE_MANAGER_IS_NOT_EXIST);
 	});
 
 	it('Delete Warehouse Manager  - success', async () => {
