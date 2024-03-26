@@ -1,6 +1,6 @@
 import { Role } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
-import { UserMsgEnum } from '../../enums/user.msg.enums';
+import { USER_IS_NOT_ENOUGH_RIGHTS } from '../../enums/user.msg';
 import { HTTPStatusCode } from '../http.status-code.enum';
 import { IMiddleware } from './middlewares.interface';
 
@@ -15,6 +15,6 @@ export class PermissionGuard implements IMiddleware {
 		if (req.role && this.#roles.includes(req.role)) {
 			return next();
 		}
-		res.status(HTTPStatusCode.FORBIDDEN).send({ error: UserMsgEnum.USER_IS_NOT_ENOUGH_RIGHTS });
+		res.status(HTTPStatusCode.FORBIDDEN).send({ error: USER_IS_NOT_ENOUGH_RIGHTS });
 	}
 }

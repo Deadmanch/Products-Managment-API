@@ -1,7 +1,7 @@
 import { IsEmail } from 'class-validator';
-import { UserMsgEnum } from '../../enums/user.msg.enums';
+import { USER_EMAIL_ERR } from '../../enums/user.msg';
 
 export class UserRemoveDto {
-	@IsEmail({}, { message: UserMsgEnum.USER_EMAIL_ERR })
+	@IsEmail({}, { message: USER_EMAIL_ERR })
 	email: string;
 }

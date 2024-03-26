@@ -10,7 +10,13 @@ import { AuthGuard } from '../common/middlewares/auth/auth.guard';
 import { PermissionGuard } from '../common/middlewares/permission.guard';
 import { ValidateMiddleware } from '../common/middlewares/validate.middleware';
 import { IConfigService } from '../config/config.service.interface';
-import { UserMsgEnum } from '../enums/user.msg.enums';
+import {
+	USER_IS_EXISTS,
+	USER_IS_NOT_EXIST,
+	USER_PASSWORD_ERR,
+	WAREHOUSE_MANAGER_IS_NOT_EXIST,
+	WAREHOUSE_MANAGER_SUCCESSFULLY_REMOVED,
+} from '../enums/user.msg';
 import { HTTPError } from '../errors/http-errors';
 import { ILogger } from '../logger/logger.interface';
 import { UserLoginDto } from './dto/user-login.dto';
@@ -87,15 +93,11 @@ export class UserController extends BaseController implements IUserController {
 	): Promise<void> {
 		const userInfo = await this.userService.getUserInfo(body.email);
 		if (!userInfo) {
-			return next(
-				new HTTPError(HTTPStatusCode.BAD_REQUEST, UserMsgEnum.USER_IS_NOT_EXIST, 'LOGIN'),
-			);
+			return next(new HTTPError(HTTPStatusCode.BAD_REQUEST, USER_IS_NOT_EXIST, 'LOGIN'));
 		}
 		const isPasswordValid = await this.userService.validateUser(body);
 		if (!isPasswordValid) {
-			return next(
-				new HTTPError(HTTPStatusCode.UNAUTHORIZED, UserMsgEnum.USER_PASSWORD_ERR, 'LOGIN'),
-			);
+			return next(new HTTPError(HTTPStatusCode.UNAUTHORIZED, USER_PASSWORD_ERR, 'LOGIN'));
 		}
 		const jwt = await this.signJWT(
 			body.email,
@@ -113,9 +115,7 @@ export class UserController extends BaseController implements IUserController {
 	): Promise<void> {
 		const result = await this.userService.register(body);
 		if (!result) {
-			return next(
-				new HTTPError(HTTPStatusCode.UNPROCESSABLE_ENTITY, UserMsgEnum.USER_IS_EXISTS, 'REGISTER'),
-			);
+			return next(new HTTPError(HTTPStatusCode.UNPROCESSABLE_ENTITY, USER_IS_EXISTS, 'REGISTER'));
 		}
 		this.send(res, HTTPStatusCode.CREATED, {
 			email: result.email,
@@ -142,9 +142,7 @@ export class UserController extends BaseController implements IUserController {
 	): Promise<void> {
 		const editedWarehouseManager = await this.userService.updateWarehouseManagerPass(body);
 		if (!editedWarehouseManager) {
-			return next(
-				new HTTPError(HTTPStatusCode.BAD_REQUEST, UserMsgEnum.USER_IS_NOT_EXIST, 'UPDATE'),
-			);
+			return next(new HTTPError(HTTPStatusCode.BAD_REQUEST, USER_IS_NOT_EXIST, 'UPDATE'));
 		} else {
 			this.send(res, HTTPStatusCode.OK, {
 				success: true,
@@ -166,16 +164,12 @@ export class UserController extends BaseController implements IUserController {
 		const result = await this.userService.deleteWarehouseManager(body.email);
 		if (!result) {
 			return next(
-				new HTTPError(
-					HTTPStatusCode.BAD_REQUEST,
-					UserMsgEnum.WAREHOUSE_MANAGER_IS_NOT_EXIST,
-					'DELETE',
-				),
+				new HTTPError(HTTPStatusCode.BAD_REQUEST, WAREHOUSE_MANAGER_IS_NOT_EXIST, 'DELETE'),
 			);
 		} else {
 			this.send(res, HTTPStatusCode.OK, {
 				success: true,
-				message: UserMsgEnum.WAREHOUSE_MANAGER_SUCCESSFULLY_REMOVED,
+				message: WAREHOUSE_MANAGER_SUCCESSFULLY_REMOVED,
 			});
 		}
 	}
@@ -187,9 +181,7 @@ export class UserController extends BaseController implements IUserController {
 	): Promise<void> {
 		const newWarehouseManager = await this.userService.createWarehouseManager(body);
 		if (!newWarehouseManager) {
-			return next(
-				new HTTPError(HTTPStatusCode.UNPROCESSABLE_ENTITY, UserMsgEnum.USER_IS_EXISTS, 'CREATE'),
-			);
+			return next(new HTTPError(HTTPStatusCode.UNPROCESSABLE_ENTITY, USER_IS_EXISTS, 'CREATE'));
 		} else {
 			this.send(res, HTTPStatusCode.CREATED, {
 				email: newWarehouseManager.email,

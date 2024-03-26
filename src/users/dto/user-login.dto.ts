@@ -1,10 +1,10 @@
 import { IsEmail, IsString } from 'class-validator';
-import { UserMsgEnum } from '../../enums/user.msg.enums';
+import { USER_EMAIL_ERR, USER_PASSWORD_ERR } from '../../enums/user.msg';
 
 export class UserLoginDto {
-	@IsEmail({}, { message: UserMsgEnum.USER_EMAIL_ERR })
+	@IsEmail({}, { message: USER_EMAIL_ERR })
 	email: string;
 
-	@IsString({ message: UserMsgEnum.USER_PASSWORD_ERR })
+	@IsString({ message: USER_PASSWORD_ERR })
 	password: string;
 }

@@ -24,7 +24,7 @@ export class App {
 		@inject(TYPES.UserController) private userController: UserController,
 	) {
 		this.app = express();
-		this.port = 8000;
+		this.port = Number(this.configService.get('SERVER_PORT'));
 	}
 	useMiddleware(): void {
 		this.app.use(express.json());

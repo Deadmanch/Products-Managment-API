@@ -2,7 +2,14 @@ import request from 'supertest';
 import { App } from '../src/app';
 import { HTTPStatusCode } from '../src/common/http.status-code.enum';
 import { PrismaService } from '../src/database/prisma.service';
-import { UserMsgEnum } from '../src/enums/user.msg.enums';
+import {
+	USER_IS_EXISTS,
+	USER_IS_NOT_AUTHORIZED,
+	USER_IS_NOT_ENOUGH_RIGHTS,
+	USER_IS_NOT_EXIST,
+	WAREHOUSE_MANAGER_IS_NOT_EXIST,
+	WAREHOUSE_MANAGER_SUCCESSFULLY_REMOVED,
+} from '../src/enums/user.msg';
 import { LoggerService } from '../src/logger/logger.service';
 import { boot } from '../src/main';
 
@@ -65,7 +72,7 @@ describe('User - e2e', () => {
 	it('Register = user is Exist', async () => {
 		const res = await request(application.app).post('/users/register').send(testAdmin);
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
-		expect(res.body.err).toBe(UserMsgEnum.USER_IS_EXISTS);
+		expect(res.body.err).toBe(USER_IS_EXISTS);
 	});
 
 	it('Login - empty email', async () => {
@@ -105,7 +112,7 @@ describe('User - e2e', () => {
 			password: testAdmin.password,
 		});
 		expect(res.statusCode).toBe(HTTPStatusCode.BAD_REQUEST);
-		expect(res.body.err).toBe(UserMsgEnum.USER_IS_NOT_EXIST);
+		expect(res.body.err).toBe(USER_IS_NOT_EXIST);
 	});
 
 	it('Login - success', async () => {
@@ -133,7 +140,7 @@ describe('User - e2e', () => {
 			.set('Authorization', 'Bearer')
 			.send();
 		expect(res.statusCode).toBe(HTTPStatusCode.UNAUTHORIZED);
-		expect(res.body.error).toBe(UserMsgEnum.USER_IS_NOT_AUTHORIZED);
+		expect(res.body.error).toBe(USER_IS_NOT_AUTHORIZED);
 	});
 
 	it('Create Warehouse Manager = error empty name', async () => {
@@ -178,7 +185,7 @@ describe('User - e2e', () => {
 			.set('Authorization', 'Bearer ' + adminJWT)
 			.send(testWarehouseManager);
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
-		expect(res.body.err).toBe(UserMsgEnum.USER_IS_EXISTS);
+		expect(res.body.err).toBe(USER_IS_EXISTS);
 	});
 
 	it('Login Warehouse manager - success', async () => {
@@ -202,7 +209,7 @@ describe('User - e2e', () => {
 				password: testWarehouseManager.password,
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.FORBIDDEN);
-		expect(res.body.error).toBe(UserMsgEnum.USER_IS_NOT_ENOUGH_RIGHTS);
+		expect(res.body.error).toBe(USER_IS_NOT_ENOUGH_RIGHTS);
 	});
 
 	it('Update Warehouse Manager password - empty email', async () => {
@@ -245,7 +252,7 @@ describe('User - e2e', () => {
 				password: testWarehouseManager.password,
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.BAD_REQUEST);
-		expect(res.body.err).toBe(UserMsgEnum.USER_IS_NOT_EXIST);
+		expect(res.body.err).toBe(USER_IS_NOT_EXIST);
 	});
 
 	it('Update Warehouse Manager password - success', async () => {
@@ -285,7 +292,7 @@ describe('User - e2e', () => {
 				email: testWarehouseManager.email,
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.FORBIDDEN);
-		expect(res.body.error).toBe(UserMsgEnum.USER_IS_NOT_ENOUGH_RIGHTS);
+		expect(res.body.error).toBe(USER_IS_NOT_ENOUGH_RIGHTS);
 	});
 
 	it('Delete Warehouse Manager error - user is not exist', async () => {
@@ -296,7 +303,7 @@ describe('User - e2e', () => {
 				email: 'test@mail.ru',
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.BAD_REQUEST);
-		expect(res.body.err).toBe(UserMsgEnum.WAREHOUSE_MANAGER_IS_NOT_EXIST);
+		expect(res.body.err).toBe(WAREHOUSE_MANAGER_IS_NOT_EXIST);
 	});
 
 	it('Delete Warehouse Manager  - success', async () => {
@@ -307,7 +314,7 @@ describe('User - e2e', () => {
 				email: testWarehouseManager.email,
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.OK);
-		expect(res.body.message).toBe(UserMsgEnum.WAREHOUSE_MANAGER_SUCCESSFULLY_REMOVED);
+		expect(res.body.message).toBe(WAREHOUSE_MANAGER_SUCCESSFULLY_REMOVED);
 	});
 });
 
