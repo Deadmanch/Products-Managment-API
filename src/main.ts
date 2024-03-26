@@ -1,6 +1,5 @@
 import { Container, ContainerModule, interfaces } from 'inversify';
 import { App } from './app';
-import { IBootstrapReturn } from './bootstrap-return.interface';
 import { TYPES } from './common/dependency-injection/types';
 import { ConfigService } from './config/config.service';
 import { IConfigService } from './config/config.service.interface';
@@ -26,6 +25,11 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<IUserService>(TYPES.UserService).to(UserService);
 	bind<IUserRepository>(TYPES.UsersRepository).to(UserRepository);
 });
+
+export interface IBootstrapReturn {
+	appContainer: Container;
+	app: App;
+}
 
 async function bootstrap(): Promise<IBootstrapReturn> {
 	const appContainer = new Container();
