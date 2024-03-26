@@ -11,18 +11,20 @@ import { User } from './user.entity';
 
 @injectable()
 export class UserService implements IUserService {
+	private SALT: number;
 	constructor(
 		@inject(TYPES.ConfigService) private configService: IConfigService,
 		@inject(TYPES.UsersRepository) private userRepository: IUserRepository,
-	) {}
+	) {
+		this.SALT = Number(this.configService.get('SALT'));
+	}
 	async register({ name, email, password }: UserRegisterType): Promise<UserModel | null> {
 		const newUser = new User({
 			email,
 			role: Role.ADMIN,
 			name,
 		});
-		const salt = this.configService.get('SALT');
-		await newUser.setPassword(password, Number(salt));
+		await newUser.setPassword(password, this.SALT);
 		const existedUser = await this.userRepository.find(email);
 		if (existedUser) {
 			return null;
@@ -61,8 +63,7 @@ export class UserService implements IUserService {
 			role: Role.WAREHOUSE_MANAGER,
 			name,
 		});
-		const salt = this.configService.get('SALT');
-		await newUser.setPassword(password, Number(salt));
+		await newUser.setPassword(password, this.SALT);
 		return this.userRepository.create(newUser);
 	}
 
@@ -71,8 +72,7 @@ export class UserService implements IUserService {
 		if (!existedUser) {
 			return null;
 		}
-		const salt = this.configService.get('SALT');
-		existedUser.password = await hash(password, Number(salt));
+		existedUser.password = await hash(password, this.SALT);
 		return this.userRepository.update(email, existedUser.password);
 	}
 

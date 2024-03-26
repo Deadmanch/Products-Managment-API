@@ -1,6 +1,6 @@
 declare namespace Express {
 	export interface Request {
-		user: string;
+		email: string;
 		role: 'ADMIN' | 'WAREHOUSE_MANAGER';
 	}
 }
