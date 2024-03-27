@@ -39,7 +39,7 @@ export class UserService implements IUserService {
 		if (!existedUser) {
 			return false;
 		}
-		console.log("Retrieved user's password from DB:", existedUser);
+
 		return existedUser.comparePassword(password);
 	}
 
