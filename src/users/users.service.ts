@@ -29,7 +29,8 @@ export class UserService implements IUserService {
 		if (existedUser) {
 			return null;
 		}
-		return this.userRepository.create(newUser);
+		const createdUser = await this.userRepository.create(newUser);
+		return createdUser;
 	}
 
 	async validateUser({ email, password }: UserLoginType): Promise<boolean> {
@@ -49,11 +50,7 @@ export class UserService implements IUserService {
 	async getUserInfo(email: string): Promise<UserModel | null> {
 		return this.userRepository.find(email);
 	}
-	async createWarehouseManager({
-		email,
-		password,
-		name,
-	}: UserRegisterType): Promise<UserModel | null> {
+	async createManager({ email, password, name }: UserRegisterType): Promise<UserModel | null> {
 		const existedUser = await this.userRepository.find(email);
 		if (existedUser) {
 			return null;
@@ -67,7 +64,7 @@ export class UserService implements IUserService {
 		return this.userRepository.create(newUser);
 	}
 
-	async updateWarehouseManagerPass({ email, password }: UserLoginType): Promise<UserModel | null> {
+	async updateManagerPass({ email, password }: UserLoginType): Promise<UserModel | null> {
 		const existedUser = await this.userRepository.find(email);
 		if (!existedUser) {
 			return null;
@@ -76,7 +73,7 @@ export class UserService implements IUserService {
 		return this.userRepository.update(email, existedUser.password);
 	}
 
-	async deleteWarehouseManager(email: string): Promise<UserModel | null> {
+	async deleteManager(email: string): Promise<UserModel | null> {
 		const existedUser = await this.userRepository.find(email);
 		if (existedUser?.role !== 'WAREHOUSE_MANAGER' || !existedUser) {
 			return null;
