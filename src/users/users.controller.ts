@@ -17,7 +17,7 @@ import {
 	USER_IS_NOT_ENOUGH_RIGHTS,
 	USER_IS_NOT_EXIST,
 	USER_PASSWORD_ERR,
-} from '../enums/user.msg';
+} from '../constants/user.msg';
 import { HTTPError } from '../errors/http-errors';
 import { ILogger } from '../logger/logger.interface';
 import { UserLoginDto } from './dto/user-login.dto';

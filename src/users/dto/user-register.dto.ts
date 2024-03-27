@@ -1,6 +1,6 @@
 import { Role } from '@prisma/client';
 import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
-import { USER_EMAIL_ERR, USER_NAME_ERR, USER_PASSWORD_ERR } from '../../enums/user.msg';
+import { USER_EMAIL_ERR, USER_NAME_ERR, USER_PASSWORD_ERR } from '../../constants/user.msg';
 
 export class UserRegisterDto {
 	@IsEmail({}, { message: USER_EMAIL_ERR })
