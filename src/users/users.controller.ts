@@ -100,7 +100,6 @@ export class UserController extends BaseController implements IUserController {
 		if (!isPasswordValid) {
 			return next(new HTTPError(HTTPStatusCode.UNAUTHORIZED, USER_PASSWORD_ERR, 'LOGIN'));
 		}
-		console.log(userInfo.password, userInfo.role);
 		const jwt = await this.signJWT(body.email, userInfo.role, this.configService.get('SECRET'));
 		this.ok(res, { jwt });
 	}

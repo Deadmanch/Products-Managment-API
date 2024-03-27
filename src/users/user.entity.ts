@@ -62,11 +62,8 @@ export class User {
 
 	async setPassword(pass: string, salt: number): Promise<void> {
 		this._password = await hash(pass, salt);
-		console.log('Password set successfully:', this._password);
 	}
 	async comparePassword(pass: string): Promise<boolean> {
-		console.log("User's password:", this._password);
-		console.log('Password to compare:', pass);
 		return compare(pass, this._password);
 	}
 }
