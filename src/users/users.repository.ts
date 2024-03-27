@@ -8,25 +8,15 @@ import { User } from './user.entity';
 export class UserRepository implements IUserRepository {
 	constructor(@inject(TYPES.PrismaService) private prismaService: PrismaService) {}
 	async create({ email, name, password, role }: User): Promise<User> {
-		const newUser = new User({
-			email,
-			hashPassword: password,
-			name,
-			role,
-		});
-		const createdUser = await this.prismaService.client.userModel.create({
+		const createdUserModel = await this.prismaService.client.userModel.create({
 			data: {
-				id: newUser.id,
-				email: newUser.email,
-				password: newUser.password,
-				name: newUser.name,
-				role: newUser.role,
-				createdAt: newUser.createdAt,
-				updatedAt: newUser.updatedAt,
-				isDeleted: newUser.isDeleted,
+				email,
+				name,
+				password,
+				role,
 			},
 		});
-		return new User(createdUser);
+		return new User(createdUserModel);
 	}
 
 	async find(email: string): Promise<User | null> {
