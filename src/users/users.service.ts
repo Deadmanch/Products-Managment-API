@@ -19,12 +19,13 @@ export class UserService implements IUserService {
 		this.SALT = Number(this.configService.get('SALT'));
 	}
 	async register({ name, email, password }: UserRegisterType): Promise<UserModel | null> {
+		const hashedPassword = await hash(password, this.SALT);
 		const newUser = new User({
 			email,
+			hashPassword: hashedPassword,
 			role: Role.ADMIN,
 			name,
 		});
-		await newUser.setPassword(password, this.SALT);
 		const existedUser = await this.userRepository.find(email);
 		if (existedUser) {
 			return null;
@@ -38,26 +39,29 @@ export class UserService implements IUserService {
 		if (!existedUser) {
 			return false;
 		}
-		const newUser = new User({
-			email: existedUser.email,
-			role: existedUser.role,
-			name: existedUser.name,
-			hashPassword: existedUser.password,
-		});
-		return newUser.comparePassword(password);
+		console.log("Retrieved user's password from DB:", existedUser);
+		return existedUser.comparePassword(password);
 	}
 
 	async getUserInfo(email: string): Promise<UserModel | null> {
 		return this.userRepository.find(email);
 	}
-	async createManager({ email, password, name }: UserRegisterType): Promise<UserModel | null> {
+	async createManager({
+		email,
+		password,
+		name,
+		role,
+	}: UserRegisterType): Promise<UserModel | null> {
 		const existedUser = await this.userRepository.find(email);
 		if (existedUser) {
 			return null;
 		}
+		if (role === Role.ADMIN) {
+			return null;
+		}
 		const newUser = new User({
 			email,
-			role: Role.WAREHOUSE_MANAGER,
+			role,
 			name,
 		});
 		await newUser.setPassword(password, this.SALT);
@@ -69,13 +73,13 @@ export class UserService implements IUserService {
 		if (!existedUser) {
 			return null;
 		}
-		existedUser.password = await hash(password, this.SALT);
+		await existedUser.setPassword(password, this.SALT);
 		return this.userRepository.update(email, existedUser.password);
 	}
 
 	async deleteManager(email: string): Promise<UserModel | null> {
 		const existedUser = await this.userRepository.find(email);
-		if (existedUser?.role !== 'WAREHOUSE_MANAGER' || !existedUser) {
+		if (!existedUser) {
 			return null;
 		}
 		return this.userRepository.delete(email);

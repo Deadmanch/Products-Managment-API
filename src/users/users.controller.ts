@@ -11,11 +11,12 @@ import { PermissionGuard } from '../common/middlewares/permission.guard';
 import { ValidateMiddleware } from '../common/middlewares/validate.middleware';
 import { IConfigService } from '../config/config.service.interface';
 import {
+	MANAGER_IS_NOT_EXIST,
+	MANAGER_SUCCESSFULLY_REMOVED,
 	USER_IS_EXISTS,
+	USER_IS_NOT_ENOUGH_RIGHTS,
 	USER_IS_NOT_EXIST,
 	USER_PASSWORD_ERR,
-	WAREHOUSE_MANAGER_IS_NOT_EXIST,
-	WAREHOUSE_MANAGER_SUCCESSFULLY_REMOVED,
 } from '../enums/user.msg';
 import { HTTPError } from '../errors/http-errors';
 import { ILogger } from '../logger/logger.interface';
@@ -56,7 +57,7 @@ export class UserController extends BaseController implements IUserController {
 			{
 				path: '/create',
 				method: 'post',
-				func: this.createWarehouseManager,
+				func: this.createManager,
 				middlewares: [
 					new AuthGuard(),
 					new ValidateMiddleware(UserRegisterDto),
@@ -66,7 +67,7 @@ export class UserController extends BaseController implements IUserController {
 			{
 				path: '/update',
 				method: 'patch',
-				func: this.updateWarehouseManager,
+				func: this.updateManager,
 				middlewares: [
 					new AuthGuard(),
 					new ValidateMiddleware(UserUpdateDto),
@@ -76,7 +77,7 @@ export class UserController extends BaseController implements IUserController {
 			{
 				path: '/delete',
 				method: 'delete',
-				func: this.deleteWarehouseManager,
+				func: this.deleteManager,
 				middlewares: [
 					new AuthGuard(),
 					new ValidateMiddleware(UserRemoveDto),
@@ -99,12 +100,8 @@ export class UserController extends BaseController implements IUserController {
 		if (!isPasswordValid) {
 			return next(new HTTPError(HTTPStatusCode.UNAUTHORIZED, USER_PASSWORD_ERR, 'LOGIN'));
 		}
-		const jwt = await this.signJWT(
-			body.email,
-			userInfo.id,
-			userInfo.role,
-			this.configService.get('SECRET'),
-		);
+		console.log(userInfo.password, userInfo.role);
+		const jwt = await this.signJWT(body.email, userInfo.role, this.configService.get('SECRET'));
 		this.ok(res, { jwt });
 	}
 
@@ -135,69 +132,73 @@ export class UserController extends BaseController implements IUserController {
 			id: userInfo?.id,
 		});
 	}
-	async updateWarehouseManager(
+	async updateManager(
 		{ body }: Request<{}, {}, UserUpdateDto>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const editedWarehouseManager = await this.userService.updateWarehouseManagerPass(body);
-		if (!editedWarehouseManager) {
+		const editedManager = await this.userService.updateManagerPass(body);
+		if (!editedManager) {
 			return next(new HTTPError(HTTPStatusCode.BAD_REQUEST, USER_IS_NOT_EXIST, 'UPDATE'));
+		} else if (editedManager.role === Role.ADMIN) {
+			return next(new HTTPError(HTTPStatusCode.FORBIDDEN, USER_IS_NOT_ENOUGH_RIGHTS, 'UPDATE'));
 		} else {
 			this.send(res, HTTPStatusCode.OK, {
 				success: true,
-				wareHouseManager: {
-					name: editedWarehouseManager.name,
-					email: editedWarehouseManager.email,
-					role: editedWarehouseManager.role,
-					id: editedWarehouseManager.id,
+				Manager: {
+					name: editedManager.name,
+					email: editedManager.email,
+					role: editedManager.role,
+					id: editedManager.id,
 				},
 			});
 		}
 	}
 
-	async deleteWarehouseManager(
+	async deleteManager(
 		{ body }: Request<{}, {}, UserRemoveDto>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const result = await this.userService.deleteWarehouseManager(body.email);
-		if (!result) {
-			return next(
-				new HTTPError(HTTPStatusCode.BAD_REQUEST, WAREHOUSE_MANAGER_IS_NOT_EXIST, 'DELETE'),
-			);
+		const deletedManager = await this.userService.deleteManager(body.email);
+		if (!deletedManager) {
+			return next(new HTTPError(HTTPStatusCode.BAD_REQUEST, MANAGER_IS_NOT_EXIST, 'DELETE'));
+		} else if (deletedManager.role === Role.ADMIN) {
+			return next(new HTTPError(HTTPStatusCode.FORBIDDEN, USER_IS_NOT_ENOUGH_RIGHTS, 'DELETE'));
 		} else {
 			this.send(res, HTTPStatusCode.OK, {
 				success: true,
-				message: WAREHOUSE_MANAGER_SUCCESSFULLY_REMOVED,
+				message: MANAGER_SUCCESSFULLY_REMOVED,
 			});
 		}
 	}
 
-	async createWarehouseManager(
+	async createManager(
 		{ body }: Request<{}, {}, UserRegisterDto>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const newWarehouseManager = await this.userService.createWarehouseManager(body);
-		if (!newWarehouseManager) {
+		const newManager = await this.userService.createManager(body);
+		if (body.role === Role.ADMIN) {
+			return next(new HTTPError(HTTPStatusCode.FORBIDDEN, USER_IS_NOT_ENOUGH_RIGHTS, 'CREATE'));
+		}
+		if (!newManager) {
 			return next(new HTTPError(HTTPStatusCode.UNPROCESSABLE_ENTITY, USER_IS_EXISTS, 'CREATE'));
 		} else {
 			this.send(res, HTTPStatusCode.CREATED, {
-				email: newWarehouseManager.email,
-				name: newWarehouseManager.name,
-				role: newWarehouseManager.role,
-				id: newWarehouseManager.id,
+				email: newManager.email,
+				name: newManager.name,
+				role: newManager.role,
+				id: newManager.id,
 			});
 		}
 	}
 
-	private signJWT(email: string, id: number, role: Role, secret: string): Promise<string> {
+	private signJWT(email: string, role: Role, secret: string): Promise<string> {
 		return new Promise((resolve, reject) => {
 			sign(
 				{
 					email,
-					id,
 					role,
 					iat: Math.floor(Date.now() / 10000),
 				},

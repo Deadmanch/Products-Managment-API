@@ -25,7 +25,14 @@ export class UserRepository implements IUserRepository {
 				email,
 			},
 		});
-		return foundUserModel ? new User(foundUserModel) : null;
+		return foundUserModel
+			? new User({
+					email: foundUserModel.email,
+					role: foundUserModel.role,
+					name: foundUserModel.name,
+					hashPassword: foundUserModel.password,
+				})
+			: null;
 	}
 
 	async update(email: string, password: string): Promise<User | null> {

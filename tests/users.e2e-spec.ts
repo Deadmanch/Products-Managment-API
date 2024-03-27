@@ -3,12 +3,12 @@ import { App } from '../src/app';
 import { HTTPStatusCode } from '../src/common/http.status-code.enum';
 import { PrismaService } from '../src/database/prisma.service';
 import {
+	MANAGER_IS_NOT_EXIST,
+	MANAGER_SUCCESSFULLY_REMOVED,
 	USER_IS_EXISTS,
 	USER_IS_NOT_AUTHORIZED,
 	USER_IS_NOT_ENOUGH_RIGHTS,
 	USER_IS_NOT_EXIST,
-	WAREHOUSE_MANAGER_IS_NOT_EXIST,
-	WAREHOUSE_MANAGER_SUCCESSFULLY_REMOVED,
 } from '../src/enums/user.msg';
 import { LoggerService } from '../src/logger/logger.service';
 import { boot } from '../src/main';
@@ -16,10 +16,10 @@ import { boot } from '../src/main';
 let application: App;
 let prismaService: PrismaService;
 let adminJWT: string | null | undefined;
-let warehouseManagerJWT: string | null | undefined;
+let ManagerJWT: string | null | undefined;
 let testAdmin: { name: string; email: string; password: string };
-let testWarehouseManager: { name: string; email: string; password: string };
-let newWarehouseManagerPass: string;
+let testManager: { name: string; email: string; password: string };
+let newManagerPass: string;
 
 beforeAll(async () => {
 	const { app } = await boot;
@@ -29,16 +29,16 @@ beforeAll(async () => {
 		email: 'test-admin@mail.ru',
 		password: 'qwerty',
 	};
-	testWarehouseManager = {
+	testManager = {
 		name: 'testWarehouseManager',
 		email: 'test-warehouse_manager@mail.ru',
 		password: 'qwerty',
 	};
-	newWarehouseManagerPass = 'qwerty-new';
+	newManagerPass = 'qwerty-new';
 	application = app;
 	await prismaService.connect();
 	adminJWT = null;
-	warehouseManagerJWT = null;
+	ManagerJWT = null;
 });
 
 describe('User - e2e', () => {
@@ -143,130 +143,130 @@ describe('User - e2e', () => {
 		expect(res.body.error).toBe(USER_IS_NOT_AUTHORIZED);
 	});
 
-	it('Create Warehouse Manager = error empty name', async () => {
+	it('Create Manager = error empty name', async () => {
 		const res = await request(application.app)
 			.post('/users/create')
 			.set('Authorization', 'Bearer ' + adminJWT)
-			.send({ email: testWarehouseManager.email, password: testWarehouseManager.password });
+			.send({ email: testManager.email, password: testManager.password });
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
 	});
 
-	it('Create Warehouse Manager = error empty email', async () => {
+	it('Create Manager = error empty email', async () => {
 		const res = await request(application.app)
 			.post('/users/create')
 			.set('Authorization', 'Bearer ' + adminJWT)
-			.send({ name: testWarehouseManager.name, password: testWarehouseManager.password });
+			.send({ name: testManager.name, password: testManager.password });
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
 	});
 
-	it('Create Warehouse Manager = error wrong email', async () => {
+	it('Create Manager = error wrong email', async () => {
 		const res = await request(application.app)
 			.post('/users/create')
 			.set('Authorization', 'Bearer ' + adminJWT)
 			.send({
-				name: testWarehouseManager.name,
-				password: testWarehouseManager.password,
+				name: testManager.name,
+				password: testManager.password,
 				email: '@mail.ru',
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
 	});
 
-	it('Create Warehouse Manager = success', async () => {
+	it('Create Manager = success', async () => {
 		const res = await request(application.app)
 			.post('/users/create')
 			.set('Authorization', 'Bearer ' + adminJWT)
-			.send(testWarehouseManager);
+			.send(testManager);
 		expect(res.statusCode).toBe(HTTPStatusCode.CREATED);
 	});
 
-	it('Create Warehouse Manager = error User is existed', async () => {
+	it('Create Manager = error User is existed', async () => {
 		const res = await request(application.app)
 			.post('/users/create')
 			.set('Authorization', 'Bearer ' + adminJWT)
-			.send(testWarehouseManager);
+			.send(testManager);
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
 		expect(res.body.err).toBe(USER_IS_EXISTS);
 	});
 
-	it('Login Warehouse manager - success', async () => {
+	it('Login manager - success', async () => {
 		const res = await request(application.app).post('/users/login').send({
-			email: testWarehouseManager.email,
-			password: testWarehouseManager.password,
-			name: testWarehouseManager.name,
+			email: testManager.email,
+			password: testManager.password,
+			name: testManager.name,
 		});
 		expect(res.statusCode).toBe(HTTPStatusCode.OK);
 		expect(res.body.jwt).not.toBeUndefined();
 		expect(res.body.jwt).not.toBeNull();
-		warehouseManagerJWT = res.body.jwt;
+		ManagerJWT = res.body.jwt;
 	});
 
-	it('Update Warehouse Manager password - FORBIDDEN', async () => {
+	it('Update Manager password - FORBIDDEN', async () => {
 		const res = await request(application.app)
 			.patch('/users/update')
-			.set('Authorization', 'Bearer ' + warehouseManagerJWT)
+			.set('Authorization', 'Bearer ' + ManagerJWT)
 			.send({
-				email: testWarehouseManager.email,
-				password: testWarehouseManager.password,
+				email: testManager.email,
+				password: testManager.password,
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.FORBIDDEN);
 		expect(res.body.error).toBe(USER_IS_NOT_ENOUGH_RIGHTS);
 	});
 
-	it('Update Warehouse Manager password - empty email', async () => {
+	it('Update Manager password - empty email', async () => {
 		const res = await request(application.app)
 			.patch('/users/update')
 			.set('Authorization', 'Bearer ' + adminJWT)
 			.send({
-				password: testWarehouseManager.password,
+				password: testManager.password,
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
 	});
 
-	it('Update Warehouse Manager password - wrong email', async () => {
+	it('Update Manager password - wrong email', async () => {
 		const res = await request(application.app)
 			.patch('/users/update')
 			.set('Authorization', 'Bearer ' + adminJWT)
 			.send({
 				email: '@mail.ru',
-				password: testWarehouseManager.password,
+				password: testManager.password,
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
 	});
 
-	it('Update Warehouse Manager password - empty password', async () => {
+	it('Update Manager password - empty password', async () => {
 		const res = await request(application.app)
 			.patch('/users/update')
 			.set('Authorization', 'Bearer ' + adminJWT)
 			.send({
-				email: testWarehouseManager.email,
+				email: testManager.email,
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
 	});
 
-	it('Update Warehouse Manager password - user is not exist', async () => {
+	it('Update Manager password - user is not exist', async () => {
 		const res = await request(application.app)
 			.patch('/users/update')
 			.set('Authorization', 'Bearer ' + adminJWT)
 			.send({
 				email: 'test@mail.ru',
-				password: testWarehouseManager.password,
+				password: testManager.password,
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.BAD_REQUEST);
 		expect(res.body.err).toBe(USER_IS_NOT_EXIST);
 	});
 
-	it('Update Warehouse Manager password - success', async () => {
+	it('Update Manager password - success', async () => {
 		const res = await request(application.app)
 			.patch('/users/update')
 			.set('Authorization', 'Bearer ' + adminJWT)
 			.send({
-				email: testWarehouseManager.email,
-				password: newWarehouseManagerPass,
+				email: testManager.email,
+				password: newManagerPass,
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.OK);
 	});
 
-	it('Delete Warehouse Manager error - empty email', async () => {
+	it('Delete Manager error - empty email', async () => {
 		const res = await request(application.app)
 			.delete('/users/delete')
 			.set('Authorization', 'Bearer ' + adminJWT)
@@ -274,7 +274,7 @@ describe('User - e2e', () => {
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
 	});
 
-	it('Delete Warehouse Manager error - wrong email', async () => {
+	it('Delete Manager error - wrong email', async () => {
 		const res = await request(application.app)
 			.delete('/users/delete')
 			.set('Authorization', 'Bearer ' + adminJWT)
@@ -284,18 +284,18 @@ describe('User - e2e', () => {
 		expect(res.statusCode).toBe(HTTPStatusCode.UNPROCESSABLE_ENTITY);
 	});
 
-	it('Delete Warehouse Manager error - FORBIDDEN', async () => {
+	it('Delete Manager error - FORBIDDEN', async () => {
 		const res = await request(application.app)
 			.delete('/users/delete')
-			.set('Authorization', 'Bearer ' + warehouseManagerJWT)
+			.set('Authorization', 'Bearer ' + ManagerJWT)
 			.send({
-				email: testWarehouseManager.email,
+				email: testManager.email,
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.FORBIDDEN);
 		expect(res.body.error).toBe(USER_IS_NOT_ENOUGH_RIGHTS);
 	});
 
-	it('Delete Warehouse Manager error - user is not exist', async () => {
+	it('Delete Manager error - user is not exist', async () => {
 		const res = await request(application.app)
 			.delete('/users/delete')
 			.set('Authorization', 'Bearer ' + adminJWT)
@@ -303,18 +303,18 @@ describe('User - e2e', () => {
 				email: 'test@mail.ru',
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.BAD_REQUEST);
-		expect(res.body.err).toBe(WAREHOUSE_MANAGER_IS_NOT_EXIST);
+		expect(res.body.err).toBe(MANAGER_IS_NOT_EXIST);
 	});
 
-	it('Delete Warehouse Manager  - success', async () => {
+	it('Delete Manager  - success', async () => {
 		const res = await request(application.app)
 			.delete('/users/delete')
 			.set('Authorization', 'Bearer ' + adminJWT)
 			.send({
-				email: testWarehouseManager.email,
+				email: testManager.email,
 			});
 		expect(res.statusCode).toBe(HTTPStatusCode.OK);
-		expect(res.body.message).toBe(WAREHOUSE_MANAGER_SUCCESSFULLY_REMOVED);
+		expect(res.body.message).toBe(MANAGER_SUCCESSFULLY_REMOVED);
 	});
 });
 
