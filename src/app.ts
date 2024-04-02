@@ -2,12 +2,14 @@ import express, { Express } from 'express';
 import { Server } from 'http';
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
+import { CategoryController } from './category/category.controller';
 import { TYPES } from './common/dependency-injection/types';
 import { AuthMiddleware } from './common/middlewares/auth/auth.middleware';
 import { IConfigService } from './config/config.service.interface';
 import { PrismaService } from './database/prisma.service';
 import { IExceptionFilter } from './errors/exception.filter.interface';
 import { ILogger } from './logger/logger.interface';
+import { ProductController } from './products/products.controller';
 import { UserController } from './users/users.controller';
 
 @injectable()
@@ -22,6 +24,8 @@ export class App {
 		@inject(TYPES.PrismaService) private prismaService: PrismaService,
 		@inject(TYPES.ConfigService) private configService: IConfigService,
 		@inject(TYPES.UserController) private userController: UserController,
+		@inject(TYPES.ProductController) private productController: ProductController,
+		@inject(TYPES.CategoryController) private categoryController: CategoryController,
 	) {
 		this.app = express();
 		this.port = Number(this.configService.get('SERVER_PORT'));
@@ -33,6 +37,8 @@ export class App {
 	}
 	async useRoutes(): Promise<void> {
 		this.app.use('/users', this.userController.router);
+		this.app.use('/product', this.productController.router);
+		this.app.use('/category', this.categoryController.router);
 	}
 
 	useExceptionFilter(): void {
