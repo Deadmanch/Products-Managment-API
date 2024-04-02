@@ -319,11 +319,6 @@ describe('User - e2e', () => {
 });
 
 afterAll(async () => {
-	await prismaService.client.userModel.delete({
-		where: {
-			email: testAdmin.email,
-		},
-	});
 	await prismaService.disconnect();
 	application.close();
 });
