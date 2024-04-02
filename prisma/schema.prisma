@@ -26,5 +26,25 @@ model UserModel {
   role      Role     @default(WAREHOUSE_MANAGER)
   isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductModel {
+  id          Int            @id @default(autoincrement())
+  title       String
+  price       Decimal        @db.Money
+  quantity    Int            @default(0)
+  description String?        @db.Text
+  category    CategoryModel? @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  categoryId  Int?
+  isDeleted   Boolean        @default(false)
+}
+
+model CategoryModel {
+  id           Int            @id @default(autoincrement())
+  name         String
+  isDeleted    Boolean        @default(false)
+  ProductModel ProductModel[]
 }
