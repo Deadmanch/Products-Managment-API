@@ -13,4 +13,6 @@ export const TYPES = {
 	CategoryRepository: Symbol.for('CategoryRepository'),
 	CategoryService: Symbol.for('CategoryService'),
 	CategoryController: Symbol.for('CategoryController'),
+	Bot: Symbol.for('Bot'),
+	StartScene: Symbol.for('StartScene'),
 };
