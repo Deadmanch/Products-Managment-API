@@ -20,6 +20,7 @@ import { IProductService } from './products/interface/products.service.interface
 import { ProductController } from './products/products.controller';
 import { ProductRepository } from './products/products.repository';
 import { ProductService } from './products/products.service';
+import { Bot } from './telegram-bot/bot';
 import { IUserController } from './users/interface/user.controller.interface';
 import { IUserRepository } from './users/interface/user.repository.interface';
 import { IUserService } from './users/interface/user.service.interface';
@@ -42,6 +43,7 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<ICategoryController>(TYPES.CategoryController).to(CategoryController);
 	bind<ICategoryRepository>(TYPES.CategoryRepository).to(CategoryRepository);
 	bind<ICategoryService>(TYPES.CategoryService).to(CategoryService);
+	bind<Bot>(TYPES.Bot).to(Bot);
 });
 
 export interface IBootstrapReturn {
