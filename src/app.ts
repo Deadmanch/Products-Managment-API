@@ -10,6 +10,7 @@ import { PrismaService } from './database/prisma.service';
 import { IExceptionFilter } from './errors/exception.filter.interface';
 import { ILogger } from './logger/logger.interface';
 import { ProductController } from './products/products.controller';
+import { Bot } from './telegram-bot/bot';
 import { UserController } from './users/users.controller';
 
 @injectable()
@@ -26,6 +27,7 @@ export class App {
 		@inject(TYPES.UserController) private userController: UserController,
 		@inject(TYPES.ProductController) private productController: ProductController,
 		@inject(TYPES.CategoryController) private categoryController: CategoryController,
+		@inject(TYPES.Bot) private bot: Bot,
 	) {
 		this.app = express();
 		this.port = Number(this.configService.get('SERVER_PORT'));
@@ -44,12 +46,16 @@ export class App {
 	useExceptionFilter(): void {
 		this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
 	}
+	useBot(): void {
+		this.bot.init();
+	}
 
 	public async init(): Promise<void> {
 		this.useMiddleware();
 		await this.useRoutes();
 		this.useExceptionFilter();
 		await this.prismaService.connect();
+		this.useBot();
 		this.server = this.app.listen(this.port);
 		this.logger.log(`Сервер запущен на http://localhost:${this.port}`);
 	}

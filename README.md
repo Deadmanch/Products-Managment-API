@@ -7,6 +7,7 @@
 - SALT=[соль для шифрования пароля, число]
 - SECRET=[секретный ключ для шифрования jwt, строка]
 - DATABASE_URL=[url для подключения к PostgreSQL, строка]: Пример - postgresql://[user[:password]@][netloc][:port][/dbname]
+- TELEGRAM_TOKEN = [API токен телеграм бота]
 
   Для инициализации проекта необходимо запустить `npm run ci && npm run start`
 
