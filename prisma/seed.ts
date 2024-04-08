@@ -93,7 +93,7 @@ export default class Seed {
 			},
 
 			{
-				title: 'Крем-латте "Соленая карамель"',
+				title: 'Крем – Латте “Солёная карамель”',
 				quantity: 7,
 				price: 150,
 				categoryId: 1,

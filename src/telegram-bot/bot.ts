@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { inject, injectable, multiInject } from 'inversify';
 import { Scenes, Telegraf } from 'telegraf';
 import LocalSession from 'telegraf-session-local';
 import { TYPES } from '../common/dependency-injection/types';
@@ -14,7 +14,7 @@ export class Bot {
 	constructor(
 		@inject(TYPES.ConfigService) private configService: IConfigService,
 		@inject(TYPES.ILogger) private loggerService: ILogger,
-		@inject(TYPES.StartScene) private startScene: IScene,
+		@multiInject(TYPES.IScene) private scenes: IScene[],
 	) {
 		const token = this.configService.get('TELEGRAM_TOKEN');
 		this.#telegraf = new Telegraf<IBotContext>(token);
@@ -28,13 +28,19 @@ export class Bot {
 	}
 
 	init(): void {
-		this.useScenes([this.startScene.describeScene()]);
-		const scenes = [this.startScene];
+		this.useScenes(this.getDescribeScene(this.scenes));
 
-		for (const scene of scenes) {
+		for (const scene of this.scenes) {
 			this.#telegraf.command(scene.commandName(), (ctx) => ctx.scene.enter(scene.commandName()));
+			this.loggerService.log(
+				`[TELEGRAM-BOT] 🤖 Команда ${scene.commandName()} добавлена в список команд 🤖`,
+			);
 		}
 		this.#telegraf.launch();
 		this.loggerService.log(`[TELEGRAM-BOT] 🤖 Телеграм-бот успешно стартовал 🚀`);
+	}
+
+	private getDescribeScene(scenes: IScene[]): Scenes.BaseScene<IBotContext>[] {
+		return scenes.map((scene) => scene.describeScene());
 	}
 }

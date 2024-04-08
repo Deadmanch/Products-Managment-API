@@ -47,7 +47,12 @@ export class ProductRepository implements IProductRepository {
 		if (findModel.price) {
 			where.price = findModel.price;
 		}
-		const products = await this.prismaService.client.productModel.findMany({ where });
+		const offset = findModel.page && findModel.page > 0 ? (findModel.page - 1) * 10 : 0;
+		const products = await this.prismaService.client.productModel.findMany({
+			where,
+			skip: offset,
+			take: 10,
+		});
 		return products.map((product) => new Product(product));
 	}
 

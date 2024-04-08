@@ -26,6 +26,11 @@ export class CategoryRepository implements ICategoryRepository {
 		return category ? new Category(category) : null;
 	}
 
+	async getAllCategories(): Promise<Category[]> {
+		const categories = await this.prismaService.client.categoryModel.findMany();
+		return categories.map((category) => new Category(category));
+	}
+
 	async getById(categoryId: number): Promise<Category | null> {
 		const existingCategory = await this.prismaService.client.categoryModel.findUnique({
 			where: { id: categoryId },

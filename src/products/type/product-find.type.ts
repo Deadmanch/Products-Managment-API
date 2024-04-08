@@ -3,4 +3,5 @@ export type ProductFindType = {
 	title?: string;
 	text?: string;
 	price?: number;
+	page?: number;
 };

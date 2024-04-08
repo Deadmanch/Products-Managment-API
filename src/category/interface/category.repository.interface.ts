@@ -4,6 +4,7 @@ import { CategoryCreateType } from '../type/category-create.type';
 export interface ICategoryRepository {
 	create: (category: Category) => Promise<Category | null>;
 	find: (findModel: CategoryCreateType) => Promise<Category | null>;
+	getAllCategories: () => Promise<Category[]>;
 	getById: (categoryId: number) => Promise<Category | null>;
 	update: (categoryId: number, category: Category) => Promise<Category | null>;
 	delete: (categoryId: number) => Promise<Category | null>;
