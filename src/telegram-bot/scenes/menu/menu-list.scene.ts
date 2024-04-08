@@ -54,7 +54,8 @@ export class MenuListScene implements IScene {
 				);
 				const showAllButtons = Markup.button.callback(SHOW_ALL_PRODUCTS, SHOW_ALL_PRODUCTS_ACTION);
 				const keyBoard = [...categoryButtons, showAllButtons];
-				await ctx.replyWithMarkdownV2(CATEGORIES_OR_ALL, Markup.inlineKeyboard([keyBoard]));
+				const inlineKeyBoard = keyBoard.map((btn) => [btn]);
+				await ctx.replyWithMarkdownV2(CATEGORIES_OR_ALL, Markup.inlineKeyboard(inlineKeyBoard));
 				keyBoard.forEach((btn) => {
 					menuListScene.action(btn.callback_data, async (ctx) => {
 						const categoryId = parseInt(
