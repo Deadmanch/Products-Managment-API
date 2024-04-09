@@ -1,6 +1,9 @@
 export const MENU_LIST_NAME = 'menu';
+
 export const SHOW_MORE = 'Показать ещё';
 export const SHOW_MORE_ACTION = 'show_more';
+
+export const SHOW_MENU_MSG = 'Показать меню';
 export const SHOW_MENU_ACTION = 'show_menu_list_';
 
 export const SHOW_ALL_PRODUCTS = 'Показать все продукты';
@@ -22,4 +25,3 @@ export const PRODUCT_ERROR = 'Что-то пошло не так. Попробу
 export const CATEGORY_NOT_FOUND = 'Категория не найдена';
 export const SHOW_PRODUCTS_BY_CATEGORY_ACTION = 'show_products_by_category_';
 export const CATEGORIES_LIST_MESSAGE = 'Список категорий:';
-export const CATEGORIES_OR_ALL = 'Выберите категорию или показать все продукты';

@@ -73,6 +73,20 @@ export class ProductRepository implements IProductRepository {
 			: null;
 	}
 
+	async getProductListByIds(productIds: number[]): Promise<Product[]> {
+		const foundProducts = await this.prismaService.client.productModel.findMany({
+			where: {
+				id: {
+					in: productIds,
+				},
+				quantity: {
+					gt: 0,
+				},
+			},
+		});
+		return foundProducts.map((product) => new Product(product));
+	}
+
 	async update(productId: number, data: Product): Promise<Product | null> {
 		const existingProduct = await this.prismaService.client.productModel.findUnique({
 			where: { id: productId },

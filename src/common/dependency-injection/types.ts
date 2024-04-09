@@ -16,7 +16,7 @@ export const TYPES = {
 	Bot: Symbol.for('Bot'),
 	IScene: Symbol.for('IScene'),
 	StartScene: Symbol.for('StartScene'),
-	// DeliveryScene: Symbol.for('DeliveryScene'),
+	DeliveryScene: Symbol.for('DeliveryScene'),
 	MenuListScene: Symbol.for('MenuListScene'),
-	// CartScene: Symbol.for('CartScene'),
+	CartScene: Symbol.for('CartScene'),
 };

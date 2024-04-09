@@ -5,9 +5,9 @@ import { TYPES } from '../../../common/dependency-injection/types';
 import { ILogger } from '../../../logger/logger.interface';
 import { IProductRepository } from '../../../products/interface/products.repository.interface';
 import { Product } from '../../../products/product.entity';
-import { CategoryNotFoundError } from '../../errors/category-notFound';
-import { ProductNotFoundError } from '../../errors/product-notFound';
-import { ProductOutError } from '../../errors/product-out.error';
+import { CategoryNotFoundError } from '../../errors/products-error/category-notFound';
+import { ProductNotFoundError } from '../../errors/products-error/product-notFound';
+import { ProductOutError } from '../../errors/products-error/product-out.error';
 import { IScene } from '../../interface/scene.interface';
 import { BACK_TO_START_ACTION, BACK_TO_START_MSG, START_NAME } from '../start/start.scene.enum';
 import { IBotContext } from './../../interface/bot-context.interface';
@@ -15,7 +15,7 @@ import {
 	ADD_TO_CART,
 	ADD_TO_CART_ACTION,
 	ADD_TO_CART_SUCCESS,
-	CATEGORIES_OR_ALL,
+	CATEGORIES_LIST_MESSAGE,
 	MENU_ITEM_ACTIONS_LIST,
 	MENU_LIST_NAME,
 	PRODUCT_NOT_FOUND,
@@ -55,7 +55,10 @@ export class MenuListScene implements IScene {
 				const showAllButtons = Markup.button.callback(SHOW_ALL_PRODUCTS, SHOW_ALL_PRODUCTS_ACTION);
 				const keyBoard = [...categoryButtons, showAllButtons];
 				const inlineKeyBoard = keyBoard.map((btn) => [btn]);
-				await ctx.replyWithMarkdownV2(CATEGORIES_OR_ALL, Markup.inlineKeyboard(inlineKeyBoard));
+				await ctx.replyWithMarkdownV2(
+					CATEGORIES_LIST_MESSAGE,
+					Markup.inlineKeyboard(inlineKeyBoard),
+				);
 				keyBoard.forEach((btn) => {
 					menuListScene.action(btn.callback_data, async (ctx) => {
 						const categoryId = parseInt(
@@ -96,7 +99,7 @@ export class MenuListScene implements IScene {
 				await ctx.scene.enter(START_NAME);
 			});
 
-			menuListScene.action(ADD_TO_CART_ACTION, async (ctx) => {
+			menuListScene.action(/add_to_cart_(\d+)/, async (ctx) => {
 				if (!ctx.session.cart) {
 					const deliveryAddress = ctx.session.deliveryAddress ? ctx.session.deliveryAddress : {};
 					ctx.session.cart = {

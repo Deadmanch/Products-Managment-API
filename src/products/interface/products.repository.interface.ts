@@ -8,4 +8,5 @@ export interface IProductRepository {
 	update: (productId: number, product: Product) => Promise<Product | null>;
 	delete: (productId: number) => Promise<Product | null>;
 	editQuantity: (productId: number, quantity: number) => Promise<Product | null>;
+	getProductListByIds(productIds: number[]): Promise<Product[]>;
 }

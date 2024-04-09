@@ -22,6 +22,8 @@ import { ProductRepository } from './products/products.repository';
 import { ProductService } from './products/products.service';
 import { Bot } from './telegram-bot/bot';
 import { IScene } from './telegram-bot/interface/scene.interface';
+import { CartScene } from './telegram-bot/scenes/cart/cart.scene';
+import { DeliveryScene } from './telegram-bot/scenes/delivery/delivery.scene';
 import { MenuListScene } from './telegram-bot/scenes/menu/menu-list.scene';
 import { StartScene } from './telegram-bot/scenes/start/start.scene';
 import { IUserController } from './users/interface/user.controller.interface';
@@ -49,8 +51,12 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<Bot>(TYPES.Bot).to(Bot);
 	bind<IScene>(TYPES.IScene).to(StartScene);
 	bind<IScene>(TYPES.IScene).to(MenuListScene);
+	bind<IScene>(TYPES.IScene).to(DeliveryScene);
+	bind<IScene>(TYPES.IScene).to(CartScene);
 	bind<IScene>(TYPES.StartScene).to(StartScene);
 	bind<IScene>(TYPES.MenuListScene).to(MenuListScene);
+	bind<IScene>(TYPES.DeliveryScene).to(DeliveryScene);
+	bind<IScene>(TYPES.CartScene).to(CartScene);
 });
 
 export interface IBootstrapReturn {
