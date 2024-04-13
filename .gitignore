@@ -6,3 +6,4 @@
 /prisma/dev.db-journal
 /pgdata
 /coverage
+local-session.json

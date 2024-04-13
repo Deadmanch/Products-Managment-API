@@ -16,17 +16,22 @@ export class User {
 		hashPassword,
 		role,
 		name,
+		id,
 	}: {
 		email: string;
 		hashPassword?: string;
 		role: Role;
 		name: string;
+		id?: number;
 	}) {
 		this._email = email;
 		this._role = role;
 		this._name = name;
 		if (hashPassword) {
 			this._password = hashPassword;
+		}
+		if (id) {
+			this._id = id;
 		}
 	}
 	get isDeleted(): boolean {
