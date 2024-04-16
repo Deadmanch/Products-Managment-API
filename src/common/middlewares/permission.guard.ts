@@ -1,6 +1,6 @@
 import { Role } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
-import { USER_IS_NOT_ENOUGH_RIGHTS } from '../../constants/user.msg';
+import { USER_IS_NOT_ENOUGH_RIGHTS } from '../../users/user.msg';
 import { HTTPStatusCode } from '../http.status-code.enum';
 import { IMiddleware } from './middlewares.interface';
 
