@@ -1,5 +1,5 @@
 import { IsEmail, IsString } from 'class-validator';
-import { USER_EMAIL_ERR, USER_PASSWORD_ERR } from '../../constants/user.msg';
+import { USER_EMAIL_ERR, USER_PASSWORD_ERR } from '../user.msg';
 
 export class UserUpdateDto {
 	@IsEmail({}, { message: USER_EMAIL_ERR })

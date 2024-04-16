@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { App } from '../src/app';
+import { CATEGORY_IS_NOT_EXIST } from '../src/category/category.msg';
 import { HTTPStatusCode } from '../src/common/http.status-code.enum';
-import { CATEGORY_IS_NOT_EXIST } from '../src/constants/category.msg';
 import { PrismaService } from '../src/database/prisma.service';
 import { LoggerService } from '../src/logger/logger.service';
 import { boot } from '../src/main';

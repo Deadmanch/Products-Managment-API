@@ -1,6 +1,9 @@
 import request from 'supertest';
 import { App } from '../src/app';
 import { HTTPStatusCode } from '../src/common/http.status-code.enum';
+import { PrismaService } from '../src/database/prisma.service';
+import { LoggerService } from '../src/logger/logger.service';
+import { boot } from '../src/main';
 import {
 	MANAGER_IS_NOT_EXIST,
 	MANAGER_SUCCESSFULLY_REMOVED,
@@ -8,10 +11,7 @@ import {
 	USER_IS_NOT_AUTHORIZED,
 	USER_IS_NOT_ENOUGH_RIGHTS,
 	USER_IS_NOT_EXIST,
-} from '../src/constants/user.msg';
-import { PrismaService } from '../src/database/prisma.service';
-import { LoggerService } from '../src/logger/logger.service';
-import { boot } from '../src/main';
+} from '../src/users/user.msg';
 
 let application: App;
 let prismaService: PrismaService;

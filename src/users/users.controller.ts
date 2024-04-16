@@ -10,14 +10,6 @@ import { AuthGuard } from '../common/middlewares/auth/auth.guard';
 import { PermissionGuard } from '../common/middlewares/permission.guard';
 import { ValidateMiddleware } from '../common/middlewares/validate.middleware';
 import { IConfigService } from '../config/config.service.interface';
-import {
-	MANAGER_IS_NOT_EXIST,
-	MANAGER_SUCCESSFULLY_REMOVED,
-	USER_IS_EXISTS,
-	USER_IS_NOT_ENOUGH_RIGHTS,
-	USER_IS_NOT_EXIST,
-	USER_PASSWORD_ERR,
-} from '../constants/user.msg';
 import { HTTPError } from '../errors/http-errors';
 import { ILogger } from '../logger/logger.interface';
 import { UserLoginDto } from './dto/user-login.dto';
@@ -25,6 +17,14 @@ import { UserRegisterDto } from './dto/user-register.dto';
 import { UserRemoveDto } from './dto/user-remove.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { IUserController } from './interface/user.controller.interface';
+import {
+	MANAGER_IS_NOT_EXIST,
+	MANAGER_SUCCESSFULLY_REMOVED,
+	USER_IS_EXISTS,
+	USER_IS_NOT_ENOUGH_RIGHTS,
+	USER_IS_NOT_EXIST,
+	USER_PASSWORD_ERR,
+} from './user.msg';
 import { UserService } from './users.service';
 
 @injectable()
