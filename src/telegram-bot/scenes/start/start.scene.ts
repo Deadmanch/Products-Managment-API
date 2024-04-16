@@ -21,9 +21,9 @@ export class StartScene implements IScene {
 	describeScene(): Scenes.BaseScene<IBotContext> {
 		const startScene = new Scenes.BaseScene<IBotContext>(this.#commandName);
 		const menu = Markup.inlineKeyboard([
-			Markup.button.callback(SET_DELIVERY_MSG, SET_ADDRESS_ACTION),
-			Markup.button.callback(SHOW_MENU_MSG, SHOW_MENU_ACTION),
-			Markup.button.callback(CART_NAME_MSG, SHOW_CART_ACTION),
+			[Markup.button.callback(SET_DELIVERY_MSG, SET_ADDRESS_ACTION)],
+			[Markup.button.callback(SHOW_MENU_MSG, SHOW_MENU_ACTION)],
+			[Markup.button.callback(CART_NAME_MSG, SHOW_CART_ACTION)],
 		]);
 		startScene.enter(async (ctx) => {
 			await ctx.replyWithMarkdownV2(START_MSG);

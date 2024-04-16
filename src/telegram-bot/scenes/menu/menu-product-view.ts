@@ -2,21 +2,22 @@ import { Product } from '../../../products/product.entity';
 
 export class ProductView {
 	static getListView(product: Product): string {
-		return `*\n Наименование: ${product.title}*
-		\nЦена\\: ${this.escapeMarkDown(product.price.toFixed(2))} руб\\.\n`;
+		return `*\nНаименование: ${product.title}*
+Цена\\: ${this.escapeMarkDown(product.price.toFixed(2))} руб\\.
+${product.quantity > 0 ? 'В наличии\\: ' + this.escapeMarkDown(String(product.quantity)) + ' шт\\.' : 'Нет в наличии'}`;
 	}
 
 	static getCartListView(productName: string, quantity: number, totalPrice: number): string {
-		return `*\n Наименование: ${productName}*
-		\nКоличество\\: ${this.escapeMarkDown(String(quantity))} шт\\.
-		\nЦена\\: ${this.escapeMarkDown(totalPrice.toFixed(2))} руб\\.\n`;
+		return `*\nНаименование: ${productName}*
+Количество\\: ${this.escapeMarkDown(String(quantity))} шт\\.
+Цена\\: ${this.escapeMarkDown(totalPrice.toFixed(2))} руб\\.`;
 	}
 
 	static getDetailView(product: Product): string {
-		return `*\nНаименование: ${product.title}*\nОписание\\: ${this.escapeMarkDown(
-			product.description ?? 'Не указано',
-		)}\nЦена\\: ${this.escapeMarkDown(product.price.toFixed(2))} руб\\.
-    \nВ наличии\\: ${this.escapeMarkDown(String(product.quantity))} шт\\.\n`;
+		return `*\nНаименование: ${product.title}*
+Описание\\: ${this.escapeMarkDown(product.description ?? 'Не указано')}
+Цена\\: ${this.escapeMarkDown(product.price.toFixed(2))} руб\\.
+${product.quantity > 0 ? 'В наличии\\: ' + this.escapeMarkDown(String(product.quantity)) + ' шт\\.' : 'Нет в наличии'}`;
 	}
 
 	static escapeMarkDown(text: string): string {

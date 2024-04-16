@@ -5,9 +5,6 @@ import { TYPES } from '../../../common/dependency-injection/types';
 import { ILogger } from '../../../logger/logger.interface';
 import { IProductRepository } from '../../../products/interface/products.repository.interface';
 import { Product } from '../../../products/product.entity';
-import { CategoryNotFoundError } from '../../errors/products-error/category-notFound';
-import { ProductNotFoundError } from '../../errors/products-error/product-notFound';
-import { ProductOutError } from '../../errors/products-error/product-out.error';
 import { IScene } from '../../interface/scene.interface';
 import { BACK_TO_START_ACTION, BACK_TO_START_MSG, START_NAME } from '../start/start.scene.enum';
 import { IBotContext } from './../../interface/bot-context.interface';
@@ -16,6 +13,7 @@ import {
 	ADD_TO_CART_ACTION,
 	ADD_TO_CART_SUCCESS,
 	CATEGORIES_LIST_MESSAGE,
+	CATEGORY_NOT_FOUND,
 	MENU_ITEM_ACTIONS_LIST,
 	MENU_LIST_NAME,
 	PRODUCT_NOT_FOUND,
@@ -42,9 +40,8 @@ export class MenuListScene implements IScene {
 
 	describeScene(): Scenes.BaseScene<IBotContext> {
 		const menuListScene = new Scenes.BaseScene<IBotContext>(this.#commandName);
-
-		try {
-			menuListScene.enter(async (ctx) => {
+		menuListScene.enter(async (ctx) => {
+			try {
 				if (!ctx.session.prodsPage || ctx.session.prodsPage < 0) {
 					ctx.session.prodsPage = 1;
 				}
@@ -67,99 +64,86 @@ export class MenuListScene implements IScene {
 						await this.showProductByCategory(categoryId, ctx);
 					});
 				});
-			});
-
-			menuListScene.action(/show_products_by_category_(\d+)/, async (ctx) => {
-				const categoryId = Number(ctx.match[1]);
-				const category = await this.categoryRepository.getById(categoryId);
-				if (!category) {
-					throw new CategoryNotFoundError();
-				}
-				const products = await this.productRepository.find({ categoryId, page: 1 });
-				await this.showMenuList(products, ctx);
-				ctx.session.prodsPage = 1;
-			});
-
-			menuListScene.action(SHOW_ALL_PRODUCTS_ACTION, async (ctx) => {
-				const products = await this.productRepository.find({ page: 1 });
-				await this.showMenuList(products, ctx);
-				ctx.session.prodsPage = 1;
-			});
-			menuListScene.action(SHOW_MORE_ACTION, async (ctx) => {
-				const page = this.getPage(ctx.session.prodsPage);
-				const nextPage = page + 1;
-				const products = await this.getProducts(nextPage);
-				await this.showMenuList(products, ctx);
-				ctx.session.prodsPage = nextPage;
-			});
-
-			menuListScene.action(BACK_TO_START_ACTION, async (ctx) => {
-				ctx.session.prodsPage = 1;
-				await ctx.scene.leave();
-				await ctx.scene.enter(START_NAME);
-			});
-
-			menuListScene.action(/add_to_cart_(\d+)/, async (ctx) => {
-				if (!ctx.session.cart) {
-					const deliveryAddress = ctx.session.deliveryAddress ? ctx.session.deliveryAddress : {};
-					ctx.session.cart = {
-						items: [],
-						deliveryAddress,
-					};
-				}
-				const productId = Number(ctx.match[1]);
-				const product = await this.productRepository.getById(productId);
-				if (!product) {
-					throw new ProductNotFoundError();
-				}
-				if (product.quantity < 0) {
-					throw new ProductOutError();
-				}
-				const cartItem = ctx.session.cart.items.find((cartItem, index, items) => {
-					const isFound = cartItem.productId === productId;
-					if (isFound) {
-						cartItem.quantity += 1;
-						items[index] = cartItem;
+				menuListScene.action(/show_products_by_category_(\d+)/, async (ctx) => {
+					const categoryId = Number(ctx.match[1]);
+					const category = await this.categoryRepository.getById(categoryId);
+					if (!category) {
+						throw new Error(CATEGORY_NOT_FOUND);
 					}
-					return isFound;
-				});
-				if (!cartItem) {
-					ctx.session.cart.items.push({
-						productId,
-						quantity: 1,
-					});
-				}
-				await ctx.reply(ADD_TO_CART_SUCCESS);
-			});
-			menuListScene.action(/show_product_detail_(\d+)/, async (ctx) => {
-				const productId = ctx.match[1];
-				const product = await this.productRepository.getById(Number(productId));
-				if (!product) {
-					throw new ProductNotFoundError();
-				}
-				await this.showProductDetail(product, ctx);
-			});
-		} catch (e) {
-			if (e instanceof ProductNotFoundError) {
-				menuListScene.enter(async (ctx) => {
-					await ctx.reply(PRODUCT_NOT_FOUND);
-				});
-			}
-			if (e instanceof ProductOutError) {
-				menuListScene.enter(async (ctx) => {
-					await ctx.reply(PRODUCT_OUT_OF_WAREHOUSE);
-				});
-			}
-			if (e instanceof Error) {
-				this.loggerService.error(e.message);
-				menuListScene.leave(async (ctx) => {
+					const products = await this.productRepository.find({ categoryId, page: 1 });
+					await this.showMenuList(products, ctx);
 					ctx.session.prodsPage = 1;
 				});
+				menuListScene.action(SHOW_ALL_PRODUCTS_ACTION, async (ctx) => {
+					const products = await this.productRepository.find({ page: 1 });
+					await this.showMenuList(products, ctx);
+					ctx.session.prodsPage = 1;
+				});
+				menuListScene.action(SHOW_MORE_ACTION, async (ctx) => {
+					const page = this.getPage(ctx.session.prodsPage);
+					const nextPage = page + 1;
+					const products = await this.getProducts(nextPage);
+					await this.showMenuList(products, ctx);
+					ctx.session.prodsPage = nextPage;
+				});
+				menuListScene.action(BACK_TO_START_ACTION, async (ctx) => {
+					ctx.session.prodsPage = 1;
+					await ctx.scene.leave();
+					await ctx.scene.enter(START_NAME);
+				});
+				menuListScene.action(/add_to_cart_(\d+)/, async (ctx) => {
+					if (!ctx.session.cart) {
+						const deliveryAddress = ctx.session.deliveryAddress ? ctx.session.deliveryAddress : {};
+						ctx.session.cart = {
+							items: [],
+							deliveryAddress,
+						};
+					}
+					const productId = Number(ctx.match[1]);
+					const product = await this.productRepository.getById(productId);
+					if (!product) {
+						throw new Error(PRODUCT_NOT_FOUND);
+					}
+					if (product.quantity <= 0) {
+						throw new Error(PRODUCT_OUT_OF_WAREHOUSE);
+					}
+					const cartItem = ctx.session.cart.items.find((cartItem, index, items) => {
+						const isFound = cartItem.productId === productId;
+						if (isFound) {
+							cartItem.quantity += 1;
+							items[index] = cartItem;
+						}
+						return isFound;
+					});
+					if (!cartItem) {
+						ctx.session.cart.items.push({
+							productId,
+							quantity: 1,
+						});
+					}
+					await ctx.reply(ADD_TO_CART_SUCCESS);
+				});
+				menuListScene.action(/show_product_detail_(\d+)/, async (ctx) => {
+					const productId = ctx.match[1];
+					const product = await this.productRepository.getById(Number(productId));
+					if (!product) {
+						throw new Error(PRODUCT_NOT_FOUND);
+					}
+					await this.showProductDetail(product, ctx);
+				});
+			} catch (e) {
+				if (e instanceof Error) {
+					this.loggerService.error(e.message);
+					await ctx.replyWithMarkdownV2(e.message);
+					menuListScene.leave(async (ctx) => {
+						ctx.session.prodsPage = 1;
+						await ctx.scene.enter(START_NAME);
+					});
+				}
 			}
-		}
+		});
 		return menuListScene;
 	}
-
 	commandName(): string {
 		return this.#commandName;
 	}
@@ -173,7 +157,6 @@ export class MenuListScene implements IScene {
 
 	private async showMenuListKeyBoard(ctx: IBotContext, isLastPage: boolean): Promise<void> {
 		const keyBoard = [];
-
 		if (!isLastPage) {
 			keyBoard.push(Markup.button.callback(SHOW_MORE, SHOW_MORE_ACTION));
 		}
@@ -196,8 +179,10 @@ export class MenuListScene implements IScene {
 
 			const menuItemButtons = [
 				Markup.button.callback(SHOW_PRODUCT_DETAIL, SHOW_PRODUCT_DETAIL_ACTION + product.id),
-				Markup.button.callback(ADD_TO_CART, ADD_TO_CART_ACTION + product.id),
 			];
+			if (product.quantity > 0) {
+				menuItemButtons.push(Markup.button.callback(ADD_TO_CART, ADD_TO_CART_ACTION + product.id));
+			}
 			await ctx.replyWithMarkdownV2(menuListItem, Markup.inlineKeyboard(menuItemButtons));
 			await new Promise((resolve) => setTimeout(resolve, 500));
 		}
