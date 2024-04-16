@@ -2,8 +2,6 @@ import { inject, injectable } from 'inversify';
 import { Scenes } from 'telegraf';
 import { TYPES } from '../../../common/dependency-injection/types';
 import { ILogger } from '../../../logger/logger.interface';
-import { DeliveryError } from '../../errors/deliverty-error/delivery-error';
-import { NotTextDeliveryError } from '../../errors/deliverty-error/not-text-delivery.error';
 import { IBotContext } from '../../interface/bot-context.interface';
 import { IScene } from '../../interface/scene.interface';
 import { DeliveryAddressType } from '../../types/delivery-address.type';
@@ -12,7 +10,7 @@ import {
 	DELIVERY_NAME,
 	DeliveryStepEnum,
 	INVALID_DELIVERY_STEP_MSG,
-	INVALID_MSG_TYPE_ERROR,
+	NOT_TEXT_MSG_ERROR,
 	SET_BUILDING_MSG,
 	SET_CITY_MSG,
 	SET_DELIVERY_FINISHED_MSG,
@@ -43,7 +41,7 @@ export class DeliveryScene implements IScene {
 			const deliveryAddress = ctx.session.deliveryAddress as DeliveryAddressType;
 			try {
 				if (!('text' in ctx.message)) {
-					throw new NotTextDeliveryError();
+					throw new Error(NOT_TEXT_MSG_ERROR);
 				}
 				switch (ctx.session.deliveryStep) {
 					case DeliveryStepEnum.ENTER_NAME:
@@ -69,16 +67,11 @@ export class DeliveryScene implements IScene {
 						await ctx.scene.enter(MENU_LIST_NAME);
 						break;
 					default:
-						throw new DeliveryError(INVALID_DELIVERY_STEP_MSG);
+						throw new Error(INVALID_DELIVERY_STEP_MSG);
 				}
 			} catch (e) {
 				if (e instanceof Error) {
 					this.loggerService.error(e.message);
-				}
-				if (e instanceof NotTextDeliveryError) {
-					await ctx.reply(INVALID_MSG_TYPE_ERROR);
-				}
-				if (e instanceof DeliveryError) {
 					await ctx.reply(e.message);
 				}
 				await ctx.scene.leave();
