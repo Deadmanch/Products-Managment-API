@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
-import { CATEGORY_IS_NOT_EXIST, ID_CATEGORY_ERR } from '../../constants/category.msg';
+import { CATEGORY_IS_NOT_EXIST, ID_CATEGORY_ERR } from '../category.msg';
 
 export class CategoryDeleteDto {
 	@IsNumber(

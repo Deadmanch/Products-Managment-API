@@ -8,7 +8,7 @@ import { CategoryCreateType } from './type/category-create.type';
 export class CategoryRepository implements ICategoryRepository {
 	constructor(@inject(TYPES.PrismaService) private prismaService: PrismaService) {}
 
-	async create({ name }: Category): Promise<Category> {
+	async create({ name }: { name: string }): Promise<Category> {
 		const createdCategory = await this.prismaService.client.categoryModel.create({
 			data: {
 				name,

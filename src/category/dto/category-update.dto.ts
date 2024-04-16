@@ -4,7 +4,7 @@ import {
 	CATEGORY_NAME_ERR,
 	CATEGORY_NAME_NOT_SPECIFIED,
 	ID_CATEGORY_ERR,
-} from '../../constants/category.msg';
+} from '../category.msg';
 
 export class CategoryUpdateDto {
 	@IsNumber(
