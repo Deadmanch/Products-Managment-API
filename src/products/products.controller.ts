@@ -8,11 +8,6 @@ import { HTTPStatusCode } from '../common/http.status-code.enum';
 import { AuthGuard } from '../common/middlewares/auth/auth.guard';
 import { PermissionGuard } from '../common/middlewares/permission.guard';
 import { ValidateMiddleware } from '../common/middlewares/validate.middleware';
-import {
-	CREATE_PRODUCT_ERR,
-	FIND_PRODUCTS_ERR,
-	PRODUCT_IS_NOT_EXIST,
-} from '../constants/product.msg';
 import { HTTPError } from '../errors/http-errors';
 import { ILogger } from '../logger/logger.interface';
 import { ProductCreateDto } from './dto/product-create.dto';
@@ -22,6 +17,7 @@ import { ProductFindDto } from './dto/product-find.dto';
 import { ProductUpdateDto } from './dto/product-update.dto';
 import { IProductController } from './interface/products.controller.interface';
 import { IProductService } from './interface/products.service.interface';
+import { CREATE_PRODUCT_ERR, FIND_PRODUCTS_ERR, PRODUCT_IS_NOT_EXIST } from './product.msg';
 
 @injectable()
 export class ProductController extends BaseController implements IProductController {
@@ -151,7 +147,7 @@ export class ProductController extends BaseController implements IProductControl
 		}
 		this.send(res, HTTPStatusCode.OK, {
 			success: true,
-			UpdatedProduct: {
+			data: {
 				title: product.title,
 				id: product.id,
 				description: product.description,
@@ -171,7 +167,7 @@ export class ProductController extends BaseController implements IProductControl
 		}
 		this.send(res, HTTPStatusCode.OK, {
 			success: true,
-			DeletedProduct: {
+			data: {
 				title: product.title,
 				id: product.id,
 				description: product.description,
@@ -195,7 +191,7 @@ export class ProductController extends BaseController implements IProductControl
 		}
 		this.send(res, HTTPStatusCode.OK, {
 			success: true,
-			ChangedProductCount: {
+			data: {
 				title: product.title,
 				id: product.id,
 				description: product.description,

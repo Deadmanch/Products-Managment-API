@@ -1,9 +1,5 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
-import {
-	ID_PRODUCT_ERR,
-	PRODUCT_IS_NOT_EXIST,
-	PRODUCT_QUANTITY_ERR,
-} from '../../constants/product.msg';
+import { ID_PRODUCT_ERR, PRODUCT_IS_NOT_EXIST, PRODUCT_QUANTITY_ERR } from '../product.msg';
 
 export class ProductEditCountDto {
 	@IsNumber(

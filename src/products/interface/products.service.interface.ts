@@ -1,14 +1,13 @@
-import { ProductModel } from '@prisma/client';
-import { ProductCreateDto } from '../dto/product-create.dto';
 import { Product } from '../product.entity';
+import { ProductCreateType } from '../type/product-create.type';
 import { ProductEditCountType } from '../type/product-edit-count.type';
 import { ProductFindType } from '../type/product-find.type';
 
 export interface IProductService {
-	createProduct: (dto: ProductCreateDto) => Promise<ProductModel | null>;
-	findProduct: (dto: ProductFindType) => Promise<ProductModel[]>;
-	getProductById: (productId: number) => Promise<ProductModel | null>;
-	updateProduct: (productId: number, data: Product) => Promise<ProductModel | null>;
-	deleteProduct: (productId: number) => Promise<ProductModel | null>;
-	editProductCount: (dto: ProductEditCountType) => Promise<ProductModel | null>;
+	createProduct: (data: ProductCreateType) => Promise<Product | null>;
+	findProduct: (data: ProductFindType) => Promise<Product[]>;
+	getProductById: (productId: number) => Promise<Product | null>;
+	updateProduct: (productId: number, data: Product) => Promise<Product | null>;
+	deleteProduct: (productId: number) => Promise<Product | null>;
+	editProductCount: (dto: ProductEditCountType) => Promise<Product | null>;
 }
