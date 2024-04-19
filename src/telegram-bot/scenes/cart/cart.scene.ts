@@ -143,7 +143,6 @@ export class CartScene implements IScene {
 				}
 			});
 			cartScene.action(BACK_TO_START_ACTION, async (ctx) => {
-				ctx.session.cart.items = [];
 				await ctx.scene.enter(START_NAME);
 			});
 		} catch (e) {
