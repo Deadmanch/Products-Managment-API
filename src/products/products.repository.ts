@@ -4,6 +4,7 @@ import { TYPES } from '../common/dependency-injection/types';
 import { PrismaService } from '../database/prisma.service';
 import { IProductRepository } from './interface/products.repository.interface';
 import { Product } from './product.entity';
+import { PRODUCT_DEFAULT_OFFSET } from './product.msg';
 import { ProductCreateType } from './type/product-create.type';
 import { ProductFindType } from './type/product-find.type';
 @injectable()
@@ -43,11 +44,11 @@ export class ProductRepository implements IProductRepository {
 		if (price) {
 			where.price = price;
 		}
-		const offset = page && page > 0 ? (page - 1) * 10 : 0;
+		const offset = page && page > 0 ? (page - 1) * PRODUCT_DEFAULT_OFFSET : 0;
 		const products = await this.prismaService.client.productModel.findMany({
 			where,
 			skip: offset,
-			take: 10,
+			take: PRODUCT_DEFAULT_OFFSET,
 		});
 		return products.map((product) => new Product(product));
 	}

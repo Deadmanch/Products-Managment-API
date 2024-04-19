@@ -5,6 +5,7 @@ import { TYPES } from '../../../common/dependency-injection/types';
 import { ILogger } from '../../../logger/logger.interface';
 import { IProductRepository } from '../../../products/interface/products.repository.interface';
 import { Product } from '../../../products/product.entity';
+import { PRODUCT_DEFAULT_OFFSET } from '../../../products/product.msg';
 import { IScene } from '../../interface/scene.interface';
 import { BACK_TO_START_ACTION, BACK_TO_START_MSG, START_NAME } from '../start/start.scene.enum';
 import { IBotContext } from './../../interface/bot-context.interface';
@@ -186,7 +187,7 @@ export class MenuListScene implements IScene {
 			await ctx.replyWithMarkdownV2(menuListItem, Markup.inlineKeyboard(menuItemButtons));
 			await new Promise((resolve) => setTimeout(resolve, 500));
 		}
-		await this.showMenuListKeyBoard(ctx, products.length < 10);
+		await this.showMenuListKeyBoard(ctx, products.length < PRODUCT_DEFAULT_OFFSET);
 	}
 
 	private async showProductByCategory(categoryId: number, ctx: IBotContext): Promise<void> {
