@@ -4,8 +4,7 @@ import { TYPES } from '../../../common/dependency-injection/types';
 import { ILogger } from '../../../logger/logger.interface';
 import { IBotContext } from '../../interface/bot-context.interface';
 import { IScene } from '../../interface/scene.interface';
-import { DeliveryAddressType } from '../../types/delivery-address.type';
-import { MENU_LIST_NAME } from '../menu/menu-list.dictionary';
+import { ScenesEnum } from '../enums/scenes.enums';
 import {
 	DELIVERY_NAME,
 	DeliveryStepEnum,
@@ -17,6 +16,7 @@ import {
 	SET_NAME_MSG,
 	SET_STREET_MSG,
 } from './delivery.dictionary';
+import { IDeliveryAddress } from './interface/delivery-address.interface';
 
 @injectable()
 export class DeliveryScene implements IScene {
@@ -38,7 +38,7 @@ export class DeliveryScene implements IScene {
 		});
 
 		deliveryScene.on('message', async (ctx) => {
-			const deliveryAddress = ctx.session.deliveryAddress as DeliveryAddressType;
+			const deliveryAddress = ctx.session.deliveryAddress as IDeliveryAddress;
 			try {
 				if (!('text' in ctx.message)) {
 					throw new Error(NOT_TEXT_MSG_ERROR);
@@ -64,7 +64,7 @@ export class DeliveryScene implements IScene {
 						await ctx.reply(SET_DELIVERY_FINISHED_MSG);
 						ctx.session.deliveryStep = null;
 						await ctx.scene.leave();
-						await ctx.scene.enter(MENU_LIST_NAME);
+						await ctx.scene.enter(ScenesEnum.CATEGORY);
 						break;
 					default:
 						throw new Error(INVALID_DELIVERY_STEP_MSG);

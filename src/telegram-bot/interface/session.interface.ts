@@ -1,11 +1,13 @@
 import { Scenes } from 'telegraf';
-import { CartType } from '../types/cart.type';
-import { DeliveryAddressType } from '../types/delivery-address.type';
+import { ICart } from '../scenes/cart/interface/cart.interface';
+import { IDeliveryAddress } from '../scenes/delivery/interface/delivery-address.interface';
 import { ISessionScene } from './session-scene.interface';
 
 export interface ISession extends Scenes.SceneSession<ISessionScene> {
-	deliveryAddress?: DeliveryAddressType;
+	deliveryAddress: IDeliveryAddress;
 	deliveryStep?: string | null;
-	prodsPage?: number;
-	cart: CartType;
+	currentPage?: number;
+	currentProductPage?: number;
+	currentCategoryId: number;
+	cart: ICart;
 }

@@ -17,6 +17,7 @@ export const TYPES = {
 	IScene: Symbol.for('IScene'),
 	StartScene: Symbol.for('StartScene'),
 	DeliveryScene: Symbol.for('DeliveryScene'),
-	MenuListScene: Symbol.for('MenuListScene'),
+	CategoryScene: Symbol.for('CategoryScene'),
+	ProductScene: Symbol.for('ProductScene'),
 	CartScene: Symbol.for('CartScene'),
 };

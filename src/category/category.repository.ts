@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../common/dependency-injection/types';
 import { PrismaService } from '../database/prisma.service';
 import { Category } from './category.entity';
+import { CATEGORY_DEFAULT_OFFSET } from './category.msg';
 import { ICategoryRepository } from './interface/category.repository.interface';
 import { CategoryCreateType } from './type/category-create.type';
 @injectable()
@@ -26,8 +27,12 @@ export class CategoryRepository implements ICategoryRepository {
 		return category ? new Category(category) : null;
 	}
 
-	async getAllCategories(): Promise<Category[]> {
-		const categories = await this.prismaService.client.categoryModel.findMany();
+	async getCategories(page = 1): Promise<Category[]> {
+		const offset = (page - 1) * CATEGORY_DEFAULT_OFFSET;
+		const categories = await this.prismaService.client.categoryModel.findMany({
+			skip: offset,
+			take: CATEGORY_DEFAULT_OFFSET,
+		});
 		return categories.map((category) => new Category(category));
 	}
 

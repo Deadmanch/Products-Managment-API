@@ -1,7 +1,7 @@
-import { DeliveryAddressType } from '../../types/delivery-address.type';
+import { IDeliveryAddress } from './interface/delivery-address.interface';
 
 export class DeliveryView {
-	static getDeliveryAddress(deliveryAddress: DeliveryAddressType): string {
+	static getDeliveryAddress(deliveryAddress: IDeliveryAddress): string {
 		return `
 *Мы помним твои данные:*
  Имя \\- *${this.escapeMarkdown(deliveryAddress.name ? deliveryAddress.name : '')}*

@@ -29,7 +29,7 @@ export class ProductRepository implements IProductRepository {
 		return new Product(createdProduct);
 	}
 
-	async find({ categoryId, title, text, price, page }: ProductFindType): Promise<Product[]> {
+	async find({ categoryId, title, text, price, page = 1 }: ProductFindType): Promise<Product[]> {
 		const where: Prisma.ProductModelWhereInput = {};
 
 		if (categoryId) {
@@ -44,7 +44,8 @@ export class ProductRepository implements IProductRepository {
 		if (price) {
 			where.price = price;
 		}
-		const offset = page && page > 0 ? (page - 1) * PRODUCT_DEFAULT_OFFSET : 0;
+
+		const offset = (page - 1) * PRODUCT_DEFAULT_OFFSET;
 		const products = await this.prismaService.client.productModel.findMany({
 			where,
 			skip: offset,

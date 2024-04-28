@@ -23,8 +23,9 @@ import { ProductService } from './products/products.service';
 import { Bot } from './telegram-bot/bot';
 import { IScene } from './telegram-bot/interface/scene.interface';
 import { CartScene } from './telegram-bot/scenes/cart/cart.scene';
+import { CategoryScene } from './telegram-bot/scenes/category/category.scene';
 import { DeliveryScene } from './telegram-bot/scenes/delivery/delivery.scene';
-import { MenuListScene } from './telegram-bot/scenes/menu/menu-list.scene';
+import { ProductScene } from './telegram-bot/scenes/product/product.scene';
 import { StartScene } from './telegram-bot/scenes/start/start.scene';
 import { IUserController } from './users/interface/user.controller.interface';
 import { IUserRepository } from './users/interface/user.repository.interface';
@@ -50,11 +51,14 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<ICategoryService>(TYPES.CategoryService).to(CategoryService);
 	bind<Bot>(TYPES.Bot).to(Bot);
 	bind<IScene>(TYPES.IScene).to(StartScene);
-	bind<IScene>(TYPES.IScene).to(MenuListScene);
+	bind<IScene>(TYPES.IScene).to(CategoryScene);
+	bind<IScene>(TYPES.IScene).to(ProductScene);
 	bind<IScene>(TYPES.IScene).to(DeliveryScene);
 	bind<IScene>(TYPES.IScene).to(CartScene);
+
 	bind<IScene>(TYPES.StartScene).to(StartScene);
-	bind<IScene>(TYPES.MenuListScene).to(MenuListScene);
+	bind<IScene>(TYPES.CategoryScene).to(CategoryScene);
+	bind<IScene>(TYPES.ProductScene).to(ProductScene);
 	bind<IScene>(TYPES.DeliveryScene).to(DeliveryScene);
 	bind<IScene>(TYPES.CartScene).to(CartScene);
 });
