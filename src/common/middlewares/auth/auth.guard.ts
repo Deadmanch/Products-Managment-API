@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { USER_IS_NOT_AUTHORIZED } from '../../../constants/user.msg';
+import { USER_IS_NOT_AUTHORIZED } from '../../../users/user.msg';
 import { HTTPStatusCode } from '../../http.status-code.enum';
 import { IMiddleware } from '../middlewares.interface';
 

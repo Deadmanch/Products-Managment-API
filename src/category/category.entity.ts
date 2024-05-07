@@ -1,23 +1,13 @@
+import { CategoryModel } from '@prisma/client';
+
 export class Category {
-	private readonly _name;
-	private readonly _id: number;
-	private readonly _isDeleted: boolean = false;
+	readonly name;
+	readonly id: number;
+	readonly isDeleted: boolean = false;
 
-	constructor({ name, id }: { name: string; id?: number }) {
-		this._name = name;
-		if (id) {
-			this._id = id;
-		}
-	}
-
-	get isDeleted(): boolean {
-		return this._isDeleted;
-	}
-	get id(): number {
-		return this._id;
-	}
-
-	get name(): string {
-		return this._name;
+	constructor(prismaModel: CategoryModel) {
+		this.name = prismaModel.name;
+		this.id = prismaModel.id;
+		this.isDeleted = prismaModel.isDeleted;
 	}
 }

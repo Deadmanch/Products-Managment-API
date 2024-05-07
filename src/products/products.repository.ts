@@ -4,16 +4,16 @@ import { TYPES } from '../common/dependency-injection/types';
 import { PrismaService } from '../database/prisma.service';
 import { IProductRepository } from './interface/products.repository.interface';
 import { Product } from './product.entity';
+import { PRODUCT_DEFAULT_OFFSET } from './product.msg';
+import { ProductCreateType } from './type/product-create.type';
 import { ProductFindType } from './type/product-find.type';
 @injectable()
 export class ProductRepository implements IProductRepository {
 	constructor(@inject(TYPES.PrismaService) private prismaService: PrismaService) {}
 
-	async create(product: Product): Promise<Product> {
-		const categoryConnect =
-			product.categoryId !== null
-				? ({ id: product.categoryId } as Prisma.CategoryModelWhereUniqueInput)
-				: undefined;
+	async create(product: ProductCreateType): Promise<Product> {
+		const categoryConnect: Prisma.CategoryModelWhereUniqueInput | undefined =
+			product.categoryId !== null ? { id: product.categoryId } : undefined;
 		const createdProduct = await this.prismaService.client.productModel.create({
 			data: {
 				title: product.title,
@@ -29,25 +29,28 @@ export class ProductRepository implements IProductRepository {
 		return new Product(createdProduct);
 	}
 
-	async find(findModel: ProductFindType): Promise<Product[]> {
+	async find({ categoryId, title, text, price, page = 1 }: ProductFindType): Promise<Product[]> {
 		const where: Prisma.ProductModelWhereInput = {};
 
-		if (findModel.categoryId) {
-			where.categoryId = findModel.categoryId;
+		if (categoryId) {
+			where.categoryId = categoryId;
 		}
-		if (findModel.title) {
-			where.title = { contains: findModel.title };
+		if (title) {
+			where.title = { contains: title };
 		}
-		if (findModel.text) {
-			where.OR = [
-				{ title: { contains: findModel.text } },
-				{ description: { contains: findModel.text } },
-			];
+		if (text) {
+			where.OR = [{ title: { contains: text } }, { description: { contains: text } }];
 		}
-		if (findModel.price) {
-			where.price = findModel.price;
+		if (price) {
+			where.price = price;
 		}
-		const products = await this.prismaService.client.productModel.findMany({ where });
+
+		const offset = (page - 1) * PRODUCT_DEFAULT_OFFSET;
+		const products = await this.prismaService.client.productModel.findMany({
+			where,
+			skip: offset,
+			take: PRODUCT_DEFAULT_OFFSET,
+		});
 		return products.map((product) => new Product(product));
 	}
 
@@ -57,15 +60,21 @@ export class ProductRepository implements IProductRepository {
 				id: productId,
 			},
 		});
-		return foundProduct
-			? new Product({
-					title: foundProduct.title,
-					description: foundProduct.description,
-					price: foundProduct.price,
-					quantity: foundProduct.quantity,
-					categoryId: foundProduct.categoryId,
-				})
-			: null;
+		return foundProduct ? new Product(foundProduct) : null;
+	}
+
+	async getProductListByIds(productIds: number[]): Promise<Product[]> {
+		const foundProducts = await this.prismaService.client.productModel.findMany({
+			where: {
+				id: {
+					in: productIds,
+				},
+				quantity: {
+					gt: 0,
+				},
+			},
+		});
+		return foundProducts.map((product) => new Product(product));
 	}
 
 	async update(productId: number, data: Product): Promise<Product | null> {

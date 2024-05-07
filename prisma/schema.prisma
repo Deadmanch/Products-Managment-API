@@ -24,9 +24,11 @@ model UserModel {
   email     String   @unique
   password  String
   role      Role     @default(WAREHOUSE_MANAGER)
-  isDeleted Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false) @map("is_deleted")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
 }
 
 model ProductModel {
@@ -36,15 +38,19 @@ model ProductModel {
   quantity    Int            @default(0)
   description String?        @db.Text
   category    CategoryModel? @relation(fields: [categoryId], references: [id])
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  categoryId  Int?
-  isDeleted   Boolean        @default(false)
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+  categoryId  Int?           @map("category_id")
+  isDeleted   Boolean        @default(false) @map("is_deleted")
+
+  @@map("products")
 }
 
 model CategoryModel {
   id           Int            @id @default(autoincrement())
   name         String
-  isDeleted    Boolean        @default(false)
+  isDeleted    Boolean        @default(false) @map("is_deleted")
   ProductModel ProductModel[]
+
+  @@map("categories")
 }

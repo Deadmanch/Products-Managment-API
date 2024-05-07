@@ -4,6 +4,6 @@ export type ProductCreateType = {
 	title: string;
 	categoryId?: number;
 	description?: string;
-	price: Decimal;
+	price: number;
 	quantity: number;
 };

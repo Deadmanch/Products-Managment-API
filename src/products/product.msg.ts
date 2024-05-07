@@ -12,3 +12,4 @@ export const PRODUCT_ID_CATEGORY_ERR = 'Неверно указана ID кат�
 export const CREATE_PRODUCT_ERR = 'Произошла ошибка при создании продукта';
 export const FIND_PRODUCTS_ERR = 'Неверно указаны параметры поиска';
 export const PRODUCT_IS_NOT_EXIST = 'Такого продукта не существует';
+export const PRODUCT_DEFAULT_OFFSET = 10;

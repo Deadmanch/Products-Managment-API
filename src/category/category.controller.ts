@@ -8,13 +8,9 @@ import { HTTPStatusCode } from '../common/http.status-code.enum';
 import { AuthGuard } from '../common/middlewares/auth/auth.guard';
 import { PermissionGuard } from '../common/middlewares/permission.guard';
 import { ValidateMiddleware } from '../common/middlewares/validate.middleware';
-import {
-	CATEGORY_IS_NOT_EXIST,
-	CREATE_CATEGORY_ERR,
-	FIND_CATEGORY_ERR,
-} from '../constants/category.msg';
 import { HTTPError } from '../errors/http-errors';
 import { ILogger } from '../logger/logger.interface';
+import { CATEGORY_IS_NOT_EXIST, CREATE_CATEGORY_ERR, FIND_CATEGORY_ERR } from './category.msg';
 import { CategoryCreateDto } from './dto/category-create.dto';
 import { CategoryDeleteDto } from './dto/category-delete.dto';
 import { CategoryUpdateDto } from './dto/category-update.dto';
@@ -141,7 +137,7 @@ export class CategoryController extends BaseController implements ICategoryContr
 		}
 		this.send(res, HTTPStatusCode.OK, {
 			success: true,
-			DeletedCategory: { name: category.name, id: category.id },
+			data: { name: category.name, id: category.id },
 		});
 	}
 }

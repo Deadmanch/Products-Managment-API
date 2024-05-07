@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
-import { ID_PRODUCT_ERR, ID_PRODUCT_NOT_SPECIFIED } from '../../constants/product.msg';
+import { ID_PRODUCT_ERR, ID_PRODUCT_NOT_SPECIFIED } from '../product.msg';
 
 export class ProductDeleteDto {
 	@IsNumber(

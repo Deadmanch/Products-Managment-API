@@ -1,5 +1,4 @@
-import { Decimal } from '@prisma/client/runtime/library';
-import { IsDecimal, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import {
 	ID_PRODUCT_ERR,
 	ID_PRODUCT_NOT_SPECIFIED,
@@ -7,9 +6,16 @@ import {
 	PRODUCT_ID_CATEGORY_ERR,
 	PRODUCT_NAME_ERR,
 	PRODUCT_PRICE_ERR,
-} from '../../constants/product.msg';
+} from '../product.msg';
 
 export class ProductUpdateDto {
+	@IsNumber(
+		{ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 0 },
+		{ message: ID_PRODUCT_ERR },
+	)
+	@IsNotEmpty({ message: ID_PRODUCT_NOT_SPECIFIED })
+	id: number;
+
 	@IsOptional()
 	@IsString({ message: PRODUCT_NAME_ERR })
 	title?: string;
@@ -29,13 +35,6 @@ export class ProductUpdateDto {
 		},
 	)
 	@IsOptional()
-	@IsDecimal({}, { message: PRODUCT_PRICE_ERR })
-	price?: Decimal;
-
-	@IsNumber(
-		{ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 0 },
-		{ message: ID_PRODUCT_ERR },
-	)
-	@IsNotEmpty({ message: ID_PRODUCT_NOT_SPECIFIED })
-	id: number;
+	@IsNumber({}, { message: PRODUCT_PRICE_ERR })
+	price?: number;
 }

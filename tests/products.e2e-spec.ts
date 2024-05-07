@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { App } from '../src/app';
 import { HTTPStatusCode } from '../src/common/http.status-code.enum';
-import { PRODUCT_IS_NOT_EXIST } from '../src/constants/product.msg';
 import { PrismaService } from '../src/database/prisma.service';
 import { LoggerService } from '../src/logger/logger.service';
 import { boot } from '../src/main';
+import { PRODUCT_IS_NOT_EXIST } from '../src/products/product.msg';
 import {
 	ADMIN_CREDENTIALS,
 	MANAGER_CREDENTIALS,

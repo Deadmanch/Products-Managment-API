@@ -1,9 +1,5 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
-import {
-	PRODUCT_ID_CATEGORY_ERR,
-	PRODUCT_NAME_ERR,
-	PRODUCT_PRICE_ERR,
-} from '../../constants/product.msg';
+import { PRODUCT_ID_CATEGORY_ERR, PRODUCT_NAME_ERR, PRODUCT_PRICE_ERR } from '../product.msg';
 
 export class ProductFindDto {
 	@IsOptional()

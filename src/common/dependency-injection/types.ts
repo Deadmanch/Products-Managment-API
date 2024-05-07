@@ -14,5 +14,10 @@ export const TYPES = {
 	CategoryService: Symbol.for('CategoryService'),
 	CategoryController: Symbol.for('CategoryController'),
 	Bot: Symbol.for('Bot'),
+	IScene: Symbol.for('IScene'),
 	StartScene: Symbol.for('StartScene'),
+	DeliveryScene: Symbol.for('DeliveryScene'),
+	CategoryScene: Symbol.for('CategoryScene'),
+	ProductScene: Symbol.for('ProductScene'),
+	CartScene: Symbol.for('CartScene'),
 };
